@@ -1,0 +1,21 @@
+
+<svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <rect id="path-sfdxh6rot2-1" x="0" y="0" width="10" height="10"></rect>
+    </defs>
+    <g id="20241022" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="20241022-registry平台" transform="translate(-302, -694)">
+            <g id="组-1176" transform="translate(212, 682)">
+                <g id="组-1125" transform="translate(73, 0)">
+                    <g id="容器" transform="translate(17, 12)">
+                        <mask id="mask-sfdxh6rot2-2" fill="white">
+                            <use xlink:href="#path-sfdxh6rot2-1"></use>
+                        </mask>
+                        <g fill-rule="nonzero"></g>
+                        <polygon id="路径" fill="#4C505D" fill-rule="nonzero" mask="url(#mask-sfdxh6rot2-2)" points="9.26476288 1.6491605 8.350914 0.735351562 5.00006771 4.08615279 1.649221 0.735351562 0.73537114 1.6491605 4.08621788 5.0000391 0.735351562 8.35085773 1.64920098 9.26476288 5.00004768 5.91388655 8.350914 9.26474476 9.26476288 8.35083866 5.91391706 5.00005817"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

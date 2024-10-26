@@ -52,9 +52,6 @@ const Header: React.FC = () => {
         isSticky ? "sticky-on" : ""
       }`}
     >
-    {/* <header
-      className={`header-two navbar sticky-header  z-10 p-3`}
-    > */}
       <div className="container-fluid">
         <div className="container mx-auto flex items-center justify-between container-1470">
           {/* Left Section with Logo */}

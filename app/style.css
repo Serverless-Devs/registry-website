@@ -2319,13 +2319,13 @@ div#preloader .loader-cubes .loader-cube .loader-cube3::before {
 
 .header-two.sticky-header.sticky-on {
   /* background: #fff; */
-   background: -webkit-gradient(linear, left top, right top, from(#7e3afb), to(#29b9f5));
-  background: linear-gradient(left, #7e3afb 0%, #29b9f5 100%);
+   background: -webkit-gradient(linear, left top, right top, from( #2a32fc), to(#7e56ff));
+  background: linear-gradient(left, #2a32fc 0%, #7e56ff 100%);
 }
 
 .header-two.sticky-header.sticky-on .header-navigation {
-  background: -webkit-gradient(linear, left top, right top, from(#7e3afb), to(#29b9f5));
-  background: linear-gradient(left, #7e3afb 0%, #29b9f5 100%);
+  background: -webkit-gradient(linear, left top, right top, from(#2a32fc), to(#7e56ff));
+  background: linear-gradient(left, #2a32fc 0%, #7e56ff 100%);
   -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.04);
           box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.04);
 }
