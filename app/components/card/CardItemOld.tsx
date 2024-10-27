@@ -9,24 +9,23 @@ import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCalendar,
   faFire,
-  faBook,
-  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface OldCardItemProps {
   item: {
+    oldType: number;
     package: string;
     download?: number;
     version: {
       created_at: string;
+      zipball_url?: string;
     };
     description?: string;
-    zipball_url?: string;
-    type?: string;
   };
+  zipball_url?: string; // Add zipball_url as a separate prop
 }
+
 
 const StyledCard = styled(Card)(({ theme }) => ({
   maxWidth: 285,
@@ -47,17 +46,6 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const getIconSrc = (item: { type?: string }) => {
-    switch (item.type) {
-      case "1":
-        return "/image/card_component.svg";
-      case "2":
-        return "/image/card_plugin.svg";
-      case "3":
-        return "/image/card_application.svg";
-    }
-  };
-
 export default function OldCardItem({ item }: OldCardItemProps) {
   const splitMaxLength = (str: string, length: number) => {
     return str.length > length ? str.substring(0, length) + "..." : str;
@@ -70,6 +58,17 @@ export default function OldCardItem({ item }: OldCardItemProps) {
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
     return new Date(dateString).toLocaleDateString("zh-CN", options);
+  };
+
+  const getIconSrc = () => {
+    switch (item.oldType) {
+      case 1:
+        return "/image/card_component.svg";
+      case 2:
+        return "/image/card_plugin.svg";
+      case 3:
+        return "/image/card_application.svg";
+    }
   };
 
   return (
@@ -119,8 +118,8 @@ export default function OldCardItem({ item }: OldCardItemProps) {
           }}
         >
           <img
-            src={getIconSrc(item)}
-            alt={`${item.type} Icon`}
+            src={getIconSrc()}
+            alt={`${item.oldType} Icon`}
             style={{ width: "30px", height: "30px" }}
           />
         </div>
@@ -140,6 +139,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
           >
             {item.download}
           </Typography>
+
           <Typography
             variant="body2"
             sx={{ fontSize: "0.9rem", color: "#828596", marginRight: "10px" }}
@@ -208,7 +208,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
             {/* Download button */}
             <button
               onClick={() => {
-                window.open(item.zipball_url || "", "_blank"); 
+                window.open(item.version.zipball_url || "", "_blank"); 
               }}
               className="download btn btn-outline-secondary"
               style={{

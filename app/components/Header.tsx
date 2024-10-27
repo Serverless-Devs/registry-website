@@ -86,17 +86,21 @@ const Header: React.FC = () => {
             <button className="nav-btn text-white border border-white rounded-full px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800" style={{ borderRadius: '20px' }}>
               EN
             </button>
-
-            <button className="nav-btn text-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
+            <Link href="/" className="text-white hover:underline">
               ZH
-            </button>
+            </Link>
+
+            {/* <button className="nav-btn text-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
+              ZH
+            </button> */}
 
             <button
-              className="nav-btn text-white bg-transparent hover:bg-white hover:text-gray-800 flex items-center justify-center"
-              // style={{ borderRadius: '50%' }}
+              className="flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
               onClick={toggleSearch}
             >
-              <img src="/image/search.svg" alt="Search Icon" />
+              <div className="w-4 h-4 rounded-full bg-white bg-opacity-10 flex items-center justify-center">
+                <img src="/image/search.svg" alt="Search Icon" className="w-5 h-5" />
+              </div>
             </button>
 
             <button

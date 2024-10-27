@@ -22,6 +22,7 @@ import Button from "@mui/material/Button";
 type Package = {
   name?: string;
   type?: string;
+  oldType?: number;
   package?: string;
   download?: number;
   latest_create?: string;
@@ -541,11 +542,12 @@ const ResourcePage: React.FC = () => {
                   <OldCardItem
                     key={index}
                     item={{
+                      oldType: Number(item.type) || 0,
                       package: item.package || "Unknown Package",
                       download: item.download || 0,
                       version: item.version || { created_at: "" },
                       description: item.description,
-                      zipball_url: item.zipball_url,
+                      // zipball_url: item.zipball_url,
                     }}
                   />
                 )
