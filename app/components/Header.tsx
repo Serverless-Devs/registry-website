@@ -48,23 +48,22 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`header-two navbar sticky-top sticky-header z-10 p-3 ${
-        isSticky ? "sticky-on" : ""
-      }`}
+      className={`header-two navbar sticky-top sticky-header z-10 p-3 ${isSticky ? "sticky-on" : ""
+        }`}
     >
       <div className="container-fluid">
         <div className="container mx-auto flex items-center justify-between container-1470">
           {/* Left Section with Logo */}
           <div className="header-left">
             <img
-              src="../image/logo.svg" 
+              src="../image/logo.svg"
               alt="Serverless Registry Logo"
               className="w-30 h-auto"
             />
           </div>
 
           {/* Middle Section with Navigation Buttons */}
-          <div className="header-center flex items-center space-x-4">
+          <div className="header-center flex items-center space-x-4 ml-10">
             <Link href="/devs" className="nav-link text-white">
               Devs
             </Link>
@@ -84,19 +83,26 @@ const Header: React.FC = () => {
 
           {/* Right Section with Buttons */}
           <div className="header-right flex items-center space-x-4">
-            <button className="nav-btn text-white border border-white rounded px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
+            <button className="nav-btn text-white border border-white rounded-full px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800" style={{ borderRadius: '20px' }}>
               EN
             </button>
-            <button className="nav-btn text-white border border-white rounded px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
+
+            <button className="nav-btn text-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
               ZH
             </button>
+
             <button
-              className="nav-btn text-white border border-white rounded px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800"
+              className="nav-btn text-white bg-transparent hover:bg-white hover:text-gray-800 flex items-center justify-center"
+              // style={{ borderRadius: '50%' }}
               onClick={toggleSearch}
             >
-              Search
+              <img src="/image/search.svg" alt="Search Icon" />
             </button>
-            <button className="nav-btn text-white border border-white rounded px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
+
+            <button
+              className="nav-btn text-white border border-white rounded-full px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800"
+              style={{ borderRadius: '20px' }}
+            >
               <a
                 href="https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/zh/0.0.2/serverless_registry_model/readme.md"
                 target="_blank"
@@ -106,6 +112,7 @@ const Header: React.FC = () => {
                 GITHUB
               </a>
             </button>
+
 
             {/* Search Overlay */}
             {showSearch && (

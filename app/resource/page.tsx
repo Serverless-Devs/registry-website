@@ -113,26 +113,31 @@ const ResourcePage: React.FC = () => {
     const search = searchParams.get("search");
     if (search) {
       setSearchQuery(search);
-      fetchData("", "", null, search);
+      fetchData(search);
     } else {
       fetchData();
     }
   }, [searchParams]);
 
-  const fetchData = async (
-    category: string = "",
-    provider: string = "",
-    type: string | null = null,
-    search: string = ""
-  ) => {
+  useEffect(() => {
+    fetchData(searchQuery); // Fetch data whenever a filter changes
+  }, [selectedCategory, selectedProvider, selectedType, searchQuery]);
+
+  const fetchData = async (search: string = "") => {
     setLoading(true);
     const url = new URL(
       "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/packages/releases"
     );
-    const params: { [key: string]: string | null } = { lang: "zh", type, category, provider, search };
+    const params: { [key: string]: string | null } = {
+      lang: "zh",
+      type: selectedType,
+      category: selectedCategory,
+      provider: selectedProvider,
+      search
+    };
 
     Object.keys(params).forEach((key) => {
-      if (params[key]) {
+      if (params[key] !== null && params[key] !== "") {
         url.searchParams.append(key, params[key] as string);
       }
     });
@@ -164,11 +169,13 @@ const ResourcePage: React.FC = () => {
   }, [data, oldData]);
 
   const handleCategoryClick = (category: string) => {
-    setSelectedCategory((prev) => (prev === category ? null : category));
+    const newCategory = selectedCategory === category ? null : category;
+    setSelectedCategory(newCategory);
   };
 
   const handleProviderClick = (provider: string) => {
-    setSelectedProvider((prev) => (prev === provider ? null : provider));
+    const newProvider = selectedProvider === provider ? null : provider;
+    setSelectedProvider(newProvider);
   };
 
   const toggleCategories = () => {
@@ -183,11 +190,25 @@ const ResourcePage: React.FC = () => {
     setSelectedCategory(null);
     setSelectedProvider(null);
     setSelectedType(null);
+    fetchData();
   };
 
   const handleTypeButtonClick = (type: string) => {
-    setSelectedType(type);
-    fetchData("", "", type, "");
+    let typeValue: string | null = null;
+    switch (type) {
+      case 'Component':
+        typeValue = '1';
+        break;
+      case 'Plugin':
+        typeValue = '2';
+        break;
+      case 'Project':
+        typeValue = '3';
+        break;
+      default:
+        typeValue = null;
+    }
+    setSelectedType(typeValue);
   };
 
   return (
@@ -226,6 +247,7 @@ const ResourcePage: React.FC = () => {
                 type="text"
                 placeholder="搜索 Package ..."
                 value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full p-3 pl-4 pr-12 border border-white rounded-md bg-opacity-25 text-white placeholder-white"
                 style={{
                   background: "rgba(255, 255, 255, 0.1)",
@@ -246,8 +268,8 @@ const ResourcePage: React.FC = () => {
           </div>
         </div>
       </section>
-                 
-       {/* Buttons Section */}
+
+      {/* Buttons Section */}
       <div
         style={{
           display: "flex",
@@ -285,13 +307,13 @@ const ResourcePage: React.FC = () => {
           AI 工具
         </Button>
         <Button
-          onClick={() => handleTypeButtonClick('application')}
+          onClick={() => handleTypeButtonClick('Project')}
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: selectedType === 'application' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            backgroundColor: selectedType === '3' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
@@ -301,13 +323,13 @@ const ResourcePage: React.FC = () => {
           应用
         </Button>
         <Button
-        onClick={() => handleTypeButtonClick('component')}
+          onClick={() => handleTypeButtonClick('Component')}
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: selectedType === 'component' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            backgroundColor: selectedType === '1' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
@@ -317,13 +339,13 @@ const ResourcePage: React.FC = () => {
           组件
         </Button>
         <Button
-         onClick={() => handleTypeButtonClick('plugin')}
+          onClick={() => handleTypeButtonClick('Plugin')}
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: selectedType === 'plugin' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            backgroundColor: selectedType === '2' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",

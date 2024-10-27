@@ -8,8 +8,6 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFire,
-  faDownload,
-  faBook,
 } from "@fortawesome/free-solid-svg-icons";
 
 interface CardItemProps {
@@ -62,7 +60,7 @@ export default function CardItem({ item }: CardItemProps) {
         return "/image/card_component.svg";
       case "Plugin":
         return "/image/card_plugin.svg";
-      case "Application":
+      case "Project":
       default:
         return "/image/card_application.svg";
     }
