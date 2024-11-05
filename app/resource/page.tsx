@@ -7,7 +7,6 @@ import Header from "../components/Header";
 import CardItem from "../components/card/CardItem";
 import OldCardItem from "../components/card/CardItemOld";
 
-import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -15,16 +14,15 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import ExtensionIcon from "@mui/icons-material/Extension";
 import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
-import CategoryIcon from '@mui/icons-material/Category';
-import CloudCircleIcon from '@mui/icons-material/CloudCircle';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import LoadingPopup from '../components/LoadingPopup';
+import Button from "@mui/material/Button";
 
 type Package = {
   name?: string;
+  type?: string;
+  oldType?: number;
   package?: string;
   download?: number;
   latest_create?: string;
@@ -50,18 +48,16 @@ const ResourcePage: React.FC = () => {
   const [sortedData, setSortedData] = useState<Package[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
-  const [searchType, setSearchType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedProvider, setSelectedProvider] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [selectedSort, setSelectedSort] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<string>("");
   const [openCategories, setOpenCategories] = useState<boolean>(false);
   const [openProviders, setOpenProviders] = useState<boolean>(false);
   const [openSort, setOpenSort] = useState<boolean>(false);
-  const [openTypes, setOpenTypes] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [oldData, setOldData] = useState<Package[]>([]);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
 
@@ -118,26 +114,31 @@ const ResourcePage: React.FC = () => {
     const search = searchParams.get("search");
     if (search) {
       setSearchQuery(search);
-      fetchData("", "", null, search);
+      fetchData(search);
     } else {
       fetchData();
     }
   }, [searchParams]);
 
-  const fetchData = async (
-    category: string = "",
-    provider: string = "",
-    type: string | null = null,
-    search: string = ""
-  ) => {
+  useEffect(() => {
+    fetchData(searchQuery); // Fetch data whenever a filter changes
+  }, [selectedCategory, selectedProvider, selectedType, searchQuery]);
+
+  const fetchData = async (search: string = "") => {
     setLoading(true);
     const url = new URL(
       "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/packages/releases"
     );
-    const params: { [key: string]: string | null } = { lang: "zh", type, category, provider, search };
+    const params: { [key: string]: string | null } = {
+      lang: "zh",
+      type: selectedType,
+      category: selectedCategory,
+      provider: selectedProvider,
+      search
+    };
 
     Object.keys(params).forEach((key) => {
-      if (params[key]) {
+      if (params[key] !== null && params[key] !== "") {
         url.searchParams.append(key, params[key] as string);
       }
     });
@@ -151,7 +152,6 @@ const ResourcePage: React.FC = () => {
     }
     setLoading(false);
   };
-
 
   useEffect(() => {
     const combinedData = [
@@ -169,68 +169,14 @@ const ResourcePage: React.FC = () => {
     setSortedData(combinedData);
   }, [data, oldData]);
 
-  const handleSort = (criteria: string) => {
-    setLoading(true);
-    setSelectedSort(criteria);
-    const sorted = [...sortedData].sort((a, b) => {
-      if (criteria === "名称") {
-        return (a.packageName || "").localeCompare(b.packageName || "");
-      }
-      if (criteria === "下载") {
-        return (b.download || 0) - (a.download || 0);
-      }
-      if (criteria === "日期") {
-        return (
-          new Date(b.latest_create || b.version?.created_at || 0).getTime() -
-          new Date(a.latest_create || a.version?.created_at || 0).getTime()
-        );
-      }
-      return 0;
-    });
-    setSortedData(sorted);
-    setLoading(false);
-  };
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-    fetchData(selectedCategory, selectedProvider, searchType, event.target.value);
-  };
-
   const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category === "None" ? "" : category);
-    fetchData(
-      category === "None" ? "" : category,
-      selectedProvider,
-      searchType,
-      searchQuery
-    );
+    const newCategory = selectedCategory === category ? null : category;
+    setSelectedCategory(newCategory);
   };
 
   const handleProviderClick = (provider: string) => {
-    setSelectedProvider(provider === "None" ? "" : provider);
-    fetchData(
-      selectedCategory,
-      provider === "None" ? "" : provider,
-      searchType,
-      searchQuery
-    );
-  };
-
-  const handleTypeClick = (type: string) => {
-    const typeMap: { [key: string]: string } = {
-      "1": "1",
-      "2": "2",
-      "3": "3",
-    };
-
-    const selectedTypeValue = typeMap[type] || type;
-    setSelectedType(selectedTypeValue);
-    fetchData(
-      selectedCategory,
-      selectedProvider,
-      selectedTypeValue,
-      searchQuery
-    );
+    const newProvider = selectedProvider === provider ? null : provider;
+    setSelectedProvider(newProvider);
   };
 
   const toggleCategories = () => {
@@ -241,46 +187,186 @@ const ResourcePage: React.FC = () => {
     setOpenProviders(!openProviders);
   };
 
-  const toggleSort = () => {
-    setOpenSort(!openSort);
+  const clearFilters = () => {
+    setSelectedCategory(null);
+    setSelectedProvider(null);
+    setSelectedType(null);
+    fetchData();
   };
 
-  const toggleTypes = () => {
-    setOpenTypes(!openTypes);
+  const handleTypeButtonClick = (type: string) => {
+    let typeValue: string | null = null;
+    switch (type) {
+      case 'Component':
+        typeValue = '1';
+        break;
+      case 'Plugin':
+        typeValue = '2';
+        break;
+      case 'Project':
+        typeValue = '3';
+        break;
+      default:
+        typeValue = null;
+    }
+    setSelectedType(typeValue);
   };
 
   return (
-    <div>
+    <div style={{ backgroundColor: "#121316", minHeight: "100vh" }}>
       <Header />
       {loading && <LoadingPopup />}
 
-      <section className="breadcrumb-area">
+      <section
+        className="breadcrumb-area"
+        style={{
+          backgroundImage: "url('/image/banner.svg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          padding: "100px 0",
+          textAlign: "center",
+        }}
+      >
         <div className="container">
-          <div className="content">
-            <input
-              type="text"
-              placeholder="搜索..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="search-input w-full p-2 border rounded"
-            />
-            <ul className="breadcrumb-list wow fadeInUp mt-4">
-              <li>
-                <a href="/">首页 /</a>
-              </li>
-              <li>搜索</li>
-            </ul>
+          <div className="content text-white">
+            <h1
+              style={{
+                fontSize: "3.0rem",
+                fontWeight: "bold",
+                marginBottom: "30px",
+                color: "#FFFFFF",
+              }}
+            >
+              Serverless 包管理平台
+            </h1>
+            <p style={{ fontSize: "1.2rem", opacity: 0.7, color: "#FFFFFF", marginBottom: "30px" }}>
+              让你像使用手机一样玩转Serverless架构
+            </p>
+
+            <div className="search-container relative inline-block w-full max-w-md">
+              <input
+                type="text"
+                placeholder="搜索 Package ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 pl-4 pr-12 border border-white rounded-md bg-opacity-25 text-white placeholder-white"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "20px",
+                  height: "45px",
+                  borderColor: "#b4b6c0",
+                  color: "#adb4f5",
+                }}
+              />
+              <span className="absolute inset-y-0 right-4 flex items-center">
+                <img
+                  src="/image/search.svg"
+                  alt="Search Icon"
+                  className="w-5 h-5"
+                />
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="main-content-section">
+      {/* Buttons Section */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "20px",
+          marginBottom: "40px",
+        }}
+      >
+        <Button
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#252528",
+            border: "1px solid #9497a1",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(90deg, #2227f2, #6638ff)",
+              borderRadius: "20px",
+              padding: "2px 8px",
+              marginRight: "8px",
+              color: "#FFFFFF",
+              fontWeight: "bold",
+            }}
+          >
+            HOT!
+          </div>
+          <img src="/image/AI_button.svg" alt="AI 工具" style={{ width: "24px", marginRight: "8px" }} />
+          AI 工具
+        </Button>
+        <Button
+          onClick={() => handleTypeButtonClick('Project')}
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: selectedType === '3' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            border: "1px solid #73757d",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <img src="/image/application_icon.svg" alt="应用" style={{ width: "24px", marginRight: "8px" }} />
+          应用
+        </Button>
+        <Button
+          onClick={() => handleTypeButtonClick('Component')}
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: selectedType === '1' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            border: "1px solid #73757d",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <img src="/image/comp_icon.svg" alt="组件" style={{ width: "24px", marginRight: "8px" }} />
+          组件
+        </Button>
+        <Button
+          onClick={() => handleTypeButtonClick('Plugin')}
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: selectedType === '2' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            border: "1px solid #73757d",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <img src="/image/plug_icon.svg" alt="插件" style={{ width: "24px", marginRight: "8px" }} />
+          插件
+        </Button>
+      </div>
+
+      <section
+        className="main-content-section"
+        style={{ backgroundColor: "transparent" }}
+      >
         <div className="container mx-auto flex flex-wrap py-12">
           <Box
             sx={{
               width: "100%",
               maxWidth: 250,
-              bgcolor: "background.paper",
+              bgcolor: "transparent",
               overflowY: "auto",
               maxHeight: 600,
               marginRight: 5,
@@ -288,58 +374,67 @@ const ResourcePage: React.FC = () => {
             component="nav"
             aria-labelledby="nested-list-subheader"
           >
-            <ListSubheader component="div" id="nested-list-subheader">
-              筛选
-            </ListSubheader>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ color: "#f2f2f5", fontSize: "20px" }}>过滤器</p>
+              <Button
+                onClick={clearFilters}
+                style={{
+                  color: "#aaadb9",
+                  backgroundColor: "#1b1c1e",
+                  border: "1px solid #FFFFFF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "5px 15px",
+                  borderRadius: "20px",
+                  borderColor: "#292a31",
+                }}
+              >
+                <img
+                  src="/image/cancel_icon.svg"
+                  alt="Cancel Icon"
+                  style={{ width: "16px", height: "16px", marginRight: "8px" }}
+                />
+                清除
+              </Button>
+            </div>
 
-            <ListItemButton onClick={toggleTypes}>
-              <ListItemIcon>
-                <ExtensionIcon />
-              </ListItemIcon>
-              <ListItemText primary="类别" />
-              {openTypes ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            <Collapse in={openTypes} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {[
-                  { type: "1", label: "组件" },
-                  { type: "2", label: "插件" },
-                  { type: "3", label: "应用" },
-                ].map((option) => (
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    key={option.type}
-                    onClick={() => handleTypeClick(option.type)}
-                  >
-                    <Checkbox
-                      checked={selectedType === option.type}
-                      onChange={() => handleTypeClick(option.type)}
-                    />
-                    <ListItemText primary={option.label} />
-                  </ListItemButton>
-                ))}
-              </List>
-            </Collapse>
-
+            {/* Categories Section */}
             <ListItemButton onClick={toggleCategories}>
               <ListItemIcon>
-                <CategoryIcon />
+                {openCategories ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
               </ListItemIcon>
-              <ListItemText primary="分类" />
-              {openCategories ? <ExpandLess /> : <ExpandMore />}
+              <ListItemText
+                primary="分类"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedCategory ? 1 : 0}
+              </div>
             </ListItemButton>
             <Collapse in={openCategories} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton
-                  sx={{ pl: 4 }}
-                  onClick={() => handleCategoryClick("None")}
-                >
-                  <Checkbox
-                    checked={selectedCategory === ""}
-                    onChange={() => handleCategoryClick("None")}
-                  />
-                  <ListItemText primary={"全部"} />
-                </ListItemButton>
                 {categories.map((category) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
@@ -349,57 +444,52 @@ const ResourcePage: React.FC = () => {
                     <Checkbox
                       checked={selectedCategory === category.name}
                       onChange={() => handleCategoryClick(category.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
                     />
-                    <ListItemText primary={category.name} />
+                    <ListItemText
+                      primary={category.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
                   </ListItemButton>
                 ))}
               </List>
             </Collapse>
 
-            <ListItemButton onClick={toggleSort}>
-              <ListItemIcon>
-                <FilterListIcon />
-              </ListItemIcon>
-              <ListItemText primary="排序" />
-              {openSort ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            <Collapse in={openSort} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {["名称", "下载", "日期"].map((criteria) => (
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    key={criteria}
-                    onClick={() => handleSort(criteria)}
-                  >
-                    <Checkbox
-                      checked={selectedSort === criteria}
-                      onChange={() => handleSort(criteria)}
-                    />
-                    <ListItemText primary={`按${criteria}排序`} />
-                  </ListItemButton>
-                ))}
-              </List>
-            </Collapse>
-
+            {/* Providers Section */}
             <ListItemButton onClick={toggleProviders}>
               <ListItemIcon>
-                <CloudCircleIcon />
+                {openProviders ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
               </ListItemIcon>
-              <ListItemText primary="云厂商" />
-              {openProviders ? <ExpandLess /> : <ExpandMore />}
+              <ListItemText
+                primary="云厂商"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedProvider ? 1 : 0}
+              </div>
             </ListItemButton>
             <Collapse in={openProviders} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItemButton
-                  sx={{ pl: 4 }}
-                  onClick={() => handleProviderClick("None")}
-                >
-                  <Checkbox
-                    checked={selectedProvider === ""}
-                    onChange={() => handleProviderClick("None")}
-                  />
-                  <ListItemText primary={"全部"} />
-                </ListItemButton>
                 {providers.map((provider) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
@@ -409,14 +499,24 @@ const ResourcePage: React.FC = () => {
                     <Checkbox
                       checked={selectedProvider === provider.name}
                       onChange={() => handleProviderClick(provider.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
                     />
-                    <ListItemText primary={provider.name} />
+                    <ListItemText
+                      primary={provider.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
                   </ListItemButton>
                 ))}
               </List>
             </Collapse>
           </Box>
 
+          {/* Content Grid */}
           <div className="w-full md:w-7/12 lg:w-9/12">
             <div
               className="grid"
@@ -431,6 +531,7 @@ const ResourcePage: React.FC = () => {
                     key={index}
                     item={{
                       name: item.name || "Unknown Name",
+                      type: item.type || "Unknown Type",
                       download: item.download || 0,
                       latest_create: item.latest_create || "",
                       description: item.description,
@@ -441,11 +542,12 @@ const ResourcePage: React.FC = () => {
                   <OldCardItem
                     key={index}
                     item={{
+                      oldType: Number(item.type) || 0,
                       package: item.package || "Unknown Package",
                       download: item.download || 0,
                       version: item.version || { created_at: "" },
                       description: item.description,
-                      zipball_url: item.zipball_url,
+                      // zipball_url: item.zipball_url,
                     }}
                   />
                 )
@@ -454,7 +556,6 @@ const ResourcePage: React.FC = () => {
           </div>
         </div>
       </section>
-
       <Footer />
     </div>
   );
