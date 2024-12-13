@@ -7,7 +7,11 @@ import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import "../responsive.css";
 import "../style.css";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  sticky?: boolean;
+}
+const Header = (props: HeaderProps) => {
+  const { sticky } = props;
   const [isSticky, setIsSticky] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const router = useRouter();
@@ -48,7 +52,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`header-two navbar sticky-top sticky-header z-10 p-3 ${isSticky ? "sticky-on" : ""
+      className={`header-two navbar ${sticky ? "sticky-top sticky-header" : ""} z-10 p-3 ${sticky && isSticky ? "sticky-on" : ""
         }`}
     >
       <div className="container-fluid">
@@ -64,17 +68,17 @@ const Header: React.FC = () => {
 
           {/* Middle Section with Navigation Buttons */}
           <div className="header-center flex items-center space-x-4 ml-10">
-            <Link href="/devs" className="nav-link text-white">
-              Devs
+            <Link href="https://serverless-devs.com" className="nav-link text-white">
+              DEVS
             </Link>
             <span className="text-white">|</span>
             <Link href="/resource" className="nav-link text-white">
-              资源
-            </Link>
-            <span className="text-white">|</span>
-            <Link href="/" className="nav-link text-white">
               主页
             </Link>
+            {/* <span className="text-white">|</span>
+            <Link href="/" className="nav-link text-white">
+              主页
+            </Link> */}
             <span className="text-white">|</span>
             <Link href="/faq" className="nav-link text-white">
               FAQ
@@ -83,12 +87,12 @@ const Header: React.FC = () => {
 
           {/* Right Section with Buttons */}
           <div className="header-right flex items-center space-x-4">
-            <button className="nav-btn text-white border border-white rounded-full px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800" style={{ borderRadius: '20px' }}>
+            {/* <button className="nav-btn text-white border border-white rounded-full px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800" style={{ borderRadius: '20px' }}>
               EN
             </button>
             <Link href="/" className="text-white hover:underline">
               ZH
-            </Link>
+            </Link> */}
 
             {/* <button className="nav-btn text-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800">
               ZH
@@ -104,14 +108,13 @@ const Header: React.FC = () => {
             </button>
 
             <button
-              className="nav-btn text-white border border-white rounded-full px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800"
-              style={{ borderRadius: '20px' }}
+              className="nav-btn w-[120px] h-[40px] items-center justify-center rounded-[32px] text-white border border-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800 flex"
             >
               <a
                 href="https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/zh/0.0.2/serverless_registry_model/readme.md"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white"
+                className="text-white text-[12px]"
               >
                 GITHUB
               </a>

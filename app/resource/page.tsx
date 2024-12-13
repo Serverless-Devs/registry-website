@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState, useLayoutEffect } from "react";
+// import { useSearchParams } from "next/navigation";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import CardItem from "../components/card/CardItem";
@@ -18,6 +18,24 @@ import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import LoadingPopup from '../components/LoadingPopup';
 import Button from "@mui/material/Button";
+// @ts-ignore
+import { BreathingColor } from '@b-design/color';
+
+const config =
+    {
+        "dpr": 0.5,
+        "background": "6483ff",
+        "palette": [
+            "ffffff",
+            "6218FF",
+            "3400FA",
+            "9968FF",
+            "1A79FF"
+        ],
+        "offsets": [1.02, 1.5, 1.05, -0.95, -1.75, 0.27, 0.99, -1.5, 0.95, 0.54],
+        "twist": [2, -0.5, 0.24, 5.7, 0.68, 0.15, 1.5, 1, 0.07, 0.04],
+        "symbolColor": "#6483FF"
+    }
 
 type Package = {
   name?: string;
@@ -57,9 +75,9 @@ const ResourcePage: React.FC = () => {
   const [openSort, setOpenSort] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [oldData, setOldData] = useState<Package[]>([]);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string>('3');
 
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
   const fetchOldPackages = async () => {
     try {
@@ -73,61 +91,71 @@ const ResourcePage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(
-          "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/common/categories",
-          {
-            headers: {
-              lang: "zh",
-            },
-          }
-        );
-        const result = await response.json();
-        setCategories(result.body);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/common/categories",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setCategories(result.body);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
-    const fetchProviders = async () => {
-      try {
-        const response = await fetch(
-          "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/common/providers",
-          {
-            headers: {
-              lang: "zh",
-            },
-          }
-        );
-        const result = await response.json();
-        setProviders(result.body);
-      } catch (error) {
-        console.error("Error fetching providers:", error);
-      }
-    };
+  const fetchProviders = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/common/providers",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setProviders(result.body);
+    } catch (error) {
+      console.error("Error fetching providers:", error);
+    }
+  };
 
+  useLayoutEffect(() => {
     fetchCategories();
     fetchProviders();
     fetchOldPackages();
-    const search = searchParams.get("search");
-    if (search) {
-      setSearchQuery(search);
-      fetchData(search);
-    } else {
-      fetchData();
-    }
-  }, [searchParams]);
+    // const bdColor = new BreathingColor({
+    //   config: config,
+    //   container: document.getElementById('breadcrumb-area'), // 容器元素
+    //   initWidth: 100,
+    //   initHeight: 100
+    // });
+    // bdColor.init();
+    // const search = searchParams.get("search");
+    // if (search) {
+    //   setSearchQuery(search);
+    //   fetchData(search);
+    // } else {
+    //   fetchData();
+    // }
+  }, []);
+  // fetchCategories();
+  // fetchProviders();
+  // fetchOldPackages();
 
   useEffect(() => {
     fetchData(searchQuery); // Fetch data whenever a filter changes
-  }, [selectedCategory, selectedProvider, selectedType, searchQuery]);
+  }, [selectedCategory, selectedProvider, selectedType]);
 
   const fetchData = async (search: string = "") => {
     setLoading(true);
     const url = new URL(
-      "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/packages/releases"
+      "https://api.devsapp.cn/v3/packages/releases"
     );
     const params: { [key: string]: string | null } = {
       lang: "zh",
@@ -190,7 +218,7 @@ const ResourcePage: React.FC = () => {
   const clearFilters = () => {
     setSelectedCategory(null);
     setSelectedProvider(null);
-    setSelectedType(null);
+    setSelectedType('3');
     fetchData();
   };
 
@@ -207,17 +235,18 @@ const ResourcePage: React.FC = () => {
         typeValue = '3';
         break;
       default:
-        typeValue = null;
+        typeValue = '3';
     }
     setSelectedType(typeValue);
   };
 
   return (
     <div style={{ backgroundColor: "#121316", minHeight: "100vh" }}>
-      <Header />
+      <Header sticky/>
       {loading && <LoadingPopup />}
 
       <section
+        id="breadcrumb-area"
         className="breadcrumb-area"
         style={{
           backgroundImage: "url('/image/banner.svg')",
@@ -249,6 +278,11 @@ const ResourcePage: React.FC = () => {
                 placeholder="搜索 Package ..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    fetchData(searchQuery);
+                  }
+                }}
                 className="w-full p-3 pl-4 pr-12 border border-white rounded-md bg-opacity-25 text-white placeholder-white"
                 style={{
                   background: "rgba(255, 255, 255, 0.1)",
@@ -280,7 +314,7 @@ const ResourcePage: React.FC = () => {
           marginBottom: "40px",
         }}
       >
-        <Button
+        {/* <Button
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
@@ -306,7 +340,7 @@ const ResourcePage: React.FC = () => {
           </div>
           <img src="/image/AI_button.svg" alt="AI 工具" style={{ width: "24px", marginRight: "8px" }} />
           AI 工具
-        </Button>
+        </Button> */}
         <Button
           onClick={() => handleTypeButtonClick('Project')}
           style={{
@@ -314,7 +348,7 @@ const ResourcePage: React.FC = () => {
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: selectedType === '3' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            background: selectedType === '3' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
@@ -330,7 +364,7 @@ const ResourcePage: React.FC = () => {
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: selectedType === '1' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            background: selectedType === '1' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
@@ -346,7 +380,7 @@ const ResourcePage: React.FC = () => {
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: selectedType === '2' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            background: selectedType === '2' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",

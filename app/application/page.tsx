@@ -29,67 +29,68 @@ const ApplicationPage: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [sortedData, setSortedData] = useState<Package[]>([]);
 
+  // Fetch categories and providers
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/common/categories",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setCategories(result.body);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchProviders = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/common/providers",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setProviders(result.body);
+    } catch (error) {
+      console.error("Error fetching providers:", error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/packages/releases?type=3",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setData(result.body);
+      setSortedData(result.body);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
-    // Fetch categories and providers
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(
-          "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/common/categories",
-          {
-            headers: {
-              lang: "zh",
-            },
-          }
-        );
-        const result = await response.json();
-        setCategories(result.body);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    const fetchProviders = async () => {
-      try {
-        const response = await fetch(
-          "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/common/providers",
-          {
-            headers: {
-              lang: "zh",
-            },
-          }
-        );
-        const result = await response.json();
-        setProviders(result.body);
-      } catch (error) {
-        console.error("Error fetching providers:", error);
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "https://server-serverlgistry-v-awljqvnszb.cn-hangzhou.fcapp.run/v3/packages/releases?type=3",
-          {
-            headers: {
-              lang: "zh",
-            },
-          }
-        );
-        const result = await response.json();
-        setData(result.body);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     fetchCategories();
     fetchProviders();
     fetchData();
   }, []);
 
-  useEffect(() => {
-    setSortedData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setSortedData(data);
+  // }, [data]);
 
   const handleSort = (criteria: string) => {
     const sorted = [...data].sort((a, b) => {

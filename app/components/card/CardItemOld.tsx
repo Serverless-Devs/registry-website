@@ -182,7 +182,8 @@ export default function OldCardItem({ item }: OldCardItemProps) {
                 const parsedDescription = JSON.parse(item.description.replace(/'/g, '"'));
                 return parsedDescription.zh;
               } catch (error) {
-                console.error("Failed to parse description:", error);
+                // console.log(item.description)
+                // console.error("Failed to parse description:", error);
                 return item.description; 
               }
             })()}

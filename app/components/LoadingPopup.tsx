@@ -1,3 +1,4 @@
+import { CircularProgress } from "@mui/material";
 import React from "react";
 
 const LoadingPopup: React.FC = () => (
@@ -23,7 +24,7 @@ const LoadingPopup: React.FC = () => (
         textAlign: "center",
       }}
     >
-      <p>加载中...</p>
+      <CircularProgress color="inherit"/>
     </div>
   </div>
 );

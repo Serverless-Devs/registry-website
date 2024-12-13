@@ -153,7 +153,7 @@ export default function CardItem({ item }: CardItemProps) {
             textOverflow: "ellipsis",
           }}
         >
-          {item.description &&
+          {/* {item.description &&
             (() => {
               try {
                 const parsedDescription = JSON.parse(item.description.replace(/'/g, '"'));
@@ -162,7 +162,7 @@ export default function CardItem({ item }: CardItemProps) {
                 console.error("Failed to parse description:", error);
                 return item.description; 
               }
-            })()}
+            })()} */}
         </Typography>
         </div>
       </div>

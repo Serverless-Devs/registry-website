@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@b-design/color": "^1.0.7",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
