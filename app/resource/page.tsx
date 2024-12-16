@@ -18,24 +18,31 @@ import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
 import LoadingPopup from '../components/LoadingPopup';
 import Button from "@mui/material/Button";
-// @ts-ignore
-import { BreathingColor } from '@b-design/color';
+import { Pagination } from "@mui/material";
+
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 const config =
-    {
-        "dpr": 0.5,
-        "background": "6483ff",
-        "palette": [
-            "ffffff",
-            "6218FF",
-            "3400FA",
-            "9968FF",
-            "1A79FF"
-        ],
-        "offsets": [1.02, 1.5, 1.05, -0.95, -1.75, 0.27, 0.99, -1.5, 0.95, 0.54],
-        "twist": [2, -0.5, 0.24, 5.7, 0.68, 0.15, 1.5, 1, 0.07, 0.04],
-        "symbolColor": "#6483FF"
-    }
+{
+  "dpr": 0.5,
+  "background": "6483ff",
+  "palette": [
+    "ffffff",
+    "6218FF",
+    "3400FA",
+    "9968FF",
+    "1A79FF"
+  ],
+  "offsets": [1.02, 1.5, 1.05, -0.95, -1.75, 0.27, 0.99, -1.5, 0.95, 0.54],
+  "twist": [2, -0.5, 0.24, 5.7, 0.68, 0.15, 1.5, 1, 0.07, 0.04],
+  "symbolColor": "#6483FF"
+}
 
 type Package = {
   name?: string;
@@ -69,13 +76,27 @@ const ResourcePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<string | null>('v3');
   const [selectedSort, setSelectedSort] = useState<string | null>(null);
   const [openCategories, setOpenCategories] = useState<boolean>(false);
   const [openProviders, setOpenProviders] = useState<boolean>(false);
+  const [openVersion, setOpenVersion] = useState<boolean>(false);
   const [openSort, setOpenSort] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [oldData, setOldData] = useState<Package[]>([]);
   const [selectedType, setSelectedType] = useState<string>('3');
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const versions = [
+    { id: 2, name: 'v2' },
+    { id: 3, name: 'v3' },
+  ]
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    fetchData(searchQuery, value);
+  };
 
   // const searchParams = useSearchParams();
 
@@ -125,6 +146,34 @@ const ResourcePage: React.FC = () => {
     }
   };
 
+  const fetchTotalPages = async (search: string = "") => {
+    const url = new URL(
+      "https://api.devsapp.cn/v3/packages/releases"
+    );
+    const params: { [key: string]: string | null | number } = {
+      lang: "zh",
+      type: selectedType,
+      category: selectedCategory,
+      provider: selectedProvider,
+      page: '-1',
+      platform: selectedVersion && selectedVersion[1],
+      search
+    };
+    Object.keys(params).forEach((key) => {
+      if (params[key] !== null && params[key] !== "") {
+        url.searchParams.append(key, params[key] as string);
+      }
+    });
+    try {
+      const response = await fetch(url.toString(), { headers: { lang: "zh" } });
+      const result = await response.json();
+      // 向上取整
+      setTotalPages(Math.ceil(result.body.length / 20));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useLayoutEffect(() => {
     fetchCategories();
     fetchProviders();
@@ -149,19 +198,22 @@ const ResourcePage: React.FC = () => {
   // fetchOldPackages();
 
   useEffect(() => {
+    fetchTotalPages(searchQuery);
     fetchData(searchQuery); // Fetch data whenever a filter changes
   }, [selectedCategory, selectedProvider, selectedType]);
 
-  const fetchData = async (search: string = "") => {
+  const fetchData = async (search: string = "", page = 1) => {
     setLoading(true);
     const url = new URL(
       "https://api.devsapp.cn/v3/packages/releases"
     );
-    const params: { [key: string]: string | null } = {
+    const params: { [key: string]: string | null | number } = {
       lang: "zh",
       type: selectedType,
       category: selectedCategory,
       provider: selectedProvider,
+      page: page,
+      platform: selectedVersion && selectedVersion[1],
       search
     };
 
@@ -188,11 +240,11 @@ const ResourcePage: React.FC = () => {
         source: "new",
         packageName: pkg.name,
       })),
-      ...oldData.map((pkg) => ({
-        ...pkg,
-        source: "old",
-        packageName: pkg.package,
-      })),
+      // ...oldData.map((pkg) => ({
+      //   ...pkg,
+      //   source: "old",
+      //   packageName: pkg.package,
+      // })),
     ];
     setSortedData(combinedData);
   }, [data, oldData]);
@@ -207,6 +259,15 @@ const ResourcePage: React.FC = () => {
     setSelectedProvider(newProvider);
   };
 
+  const handleVersionClick = (version: string) => {
+    const newVersion = selectedVersion === version ? null : version;
+    setSelectedVersion(newVersion);
+  };
+
+  const toggleVersion = () => {
+    setOpenVersion(!openVersion);
+  };
+
   const toggleCategories = () => {
     setOpenCategories(!openCategories);
   };
@@ -219,6 +280,7 @@ const ResourcePage: React.FC = () => {
     setSelectedCategory(null);
     setSelectedProvider(null);
     setSelectedType('3');
+    fetchTotalPages();
     fetchData();
   };
 
@@ -241,8 +303,9 @@ const ResourcePage: React.FC = () => {
   };
 
   return (
+
     <div style={{ backgroundColor: "#121316", minHeight: "100vh" }}>
-      <Header sticky/>
+      <Header sticky />
       {loading && <LoadingPopup />}
 
       <section
@@ -280,6 +343,7 @@ const ResourcePage: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
+                    fetchTotalPages(searchQuery);
                     fetchData(searchQuery);
                   }
                 }}
@@ -439,6 +503,61 @@ const ResourcePage: React.FC = () => {
               </Button>
             </div>
 
+            {/* version section */}
+            <ListItemButton onClick={toggleVersion}>
+              <ListItemIcon>
+                {openVersion ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary="版本"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedVersion ? 1 : 0}
+              </div>
+            </ListItemButton>
+            <Collapse in={openVersion} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {versions.map((version) => (
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    key={version.id}
+                    onClick={() => handleVersionClick(version.name)}
+                  >
+                    <Checkbox
+                      checked={selectedVersion === version.name}
+                      onChange={() => handleVersionClick(version.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
+                    />
+                    <ListItemText
+                      primary={version.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+
             {/* Categories Section */}
             <ListItemButton onClick={toggleCategories}>
               <ListItemIcon>
@@ -587,11 +706,16 @@ const ResourcePage: React.FC = () => {
                 )
               )}
             </div>
+            <ThemeProvider theme={darkTheme}>
+              <Pagination count={totalPages} size="large" page={page} onChange={handlePageChange} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }} />
+            </ThemeProvider>
           </div>
         </div>
       </section>
       <Footer />
     </div>
+
+
   );
 };
 

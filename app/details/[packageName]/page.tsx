@@ -17,6 +17,7 @@ import {
   CardHeader,
   Avatar,
   CardContent,
+  Link,
 } from "@mui/material";
 import { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { tableCellClasses } from "@mui/material/TableCell";
@@ -266,7 +267,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
     const markdown = `\`\`\`bash\ns init ${packageDetail?.name}\n \`\`\` `;
     return (
       <div className="m-2 text-left">
-        <div className="mb-2 text-sm">使用s工具下载到本地</div>
+        <div className="mb-2 text-sm text-white">使用 <Link href="https://docs.serverless-devs.com/getting-started/" color="primary" underline="always">S工具</Link> 下载到本地</div>
         <div
           className="markdown-body"
           dangerouslySetInnerHTML={{ __html: md.render(markdown) }}
@@ -347,7 +348,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
     return (
       <div>
         <div style={statsContainerStyle}>
-          <div style={statsItemStyle}>
+          <div style={statsItemStyle as any}>
             <div style={statsNumberStyle}>-</div>
             <div style={statsLabelStyle}>工具方法</div>
             <Tooltip
@@ -387,7 +388,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
           </div>
           {/* 分割线 */}
           <div className="border-r border-[#4C505D] h-[32px]"></div>
-          <div style={statsItemStyle}>
+          <div style={statsItemStyle as any}>
             <div style={statsNumberStyle}>{pkgInfo?.download}</div>
             <div style={statsLabelStyle}>下载量</div>
             <ClickAwayListener onClickAway={handleTooltipClose}>
@@ -424,7 +425,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
             </ClickAwayListener>
           </div>
           <div className="border-r border-[#4C505D] h-[32px]"></div>
-          <div style={statsItemStyle}>
+          <div style={statsItemStyle as any}>
             <div style={statsNumberStyle}>- s</div>
             <div style={statsLabelStyle}>部署耗时</div>
             <Button
@@ -452,18 +453,18 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
     return (
       <div>
         <div className="p-0" style={statsContainerStyle}>
-          <div style={statsItemStyle}>
+          <div style={statsItemStyle as any}>
             <div style={statsNumberStyle}>-</div>
             <div style={statsLabelStyle}>工具方法</div>
           </div>
           {/* 分割线 */}
           <div className="border-r border-[#4C505D] h-[32px]"></div>
-          <div style={statsItemStyle}>
+          <div style={statsItemStyle as any}>
             <div style={statsNumberStyle}>{pkgInfo?.download}</div>
             <div style={statsLabelStyle}>下载量</div>
           </div>
           <div className="border-r border-[#4C505D] h-[32px]"></div>
-          <div style={statsItemStyle}>
+          <div style={statsItemStyle as any}>
             <div style={statsNumberStyle}>- s</div>
             <div style={statsLabelStyle}>部署耗时</div>
           </div>
@@ -634,7 +635,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
         </div>
       </section>
       {isSticky && (
-        <Card style={stickyDivStyle}>
+        <Card style={stickyDivStyle as any}>
           <CardHeader
             title={<span className="text-[24px]">{packageDetail?.name}</span>}
             avatar={
@@ -670,11 +671,11 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
 
       <div
         className={`container ${
-          isSticky ? "!ml-auto !mr-0" : ""
+          isSticky ? "!ml-auto !mr-10" : ""
         } w-[80%] p-4 mx-6`}
       >
         <div className="flex">
-          <div className="p-4 ml-10">
+          <div className="p-4 ml-10 w-full">
             <div className="mb-4 p-4">
               <h2 className="text-white mb-6">描述</h2>
               <p className="text-[#F4F4F6] text-opacity-70 mb-6">

@@ -180,8 +180,8 @@ export default function CardItem({ item }: CardItemProps) {
 
       {/* Action buttons for download and details */}
       <CardActions disableSpacing>
-        <div style={{ width: "100%", textAlign: "left", marginTop:"-15px" }}>
-          <div className="button flex space-x-4">
+        <div style={{ width: "100%", textAlign: "left", marginTop:"-30px" }}>
+          <div className="flex space-x-4 justify-center ">
             {/* Download button */}
             <button
               onClick={() => {
