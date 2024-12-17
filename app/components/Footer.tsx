@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
                   Serverless 开源生态而努力。正在为成为好用的 Serverless 领域的
                   NPM，Pypi ... 而努力。
                 </p>
-                <div className="social mt-4 flex space-x-4">
+                {/* <div className="social mt-4 flex space-x-4">
                   <a
                     href="https://github.com/serverless-devs/serverless-devs"
                     className="text-gray-400 hover:text-white"
@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
                   >
                     <i className="fab fa-page4"></i>
                   </a>
-                </div>
+                </div> */}
               </div>
             </div>
             <div
@@ -101,8 +101,8 @@ const Footer: React.FC = () => {
                 <h4 className="lasthead">钉钉交流群</h4>
                 <div className="footer-list">
                   <img
-                    src="https://serverless-article-picture.oss-cn-hangzhou.aliyuncs.com/1648814797378_20220401120637498673.png"
-                    className="w-24"
+                    src="https://img.alicdn.com/imgextra/i2/O1CN019nXeTy1RfFo9CfR7i_!!6000000002138-2-tps-1264-1806.png"
+                    className="w-64"
                     alt="钉钉交流群"
                   />
                 </div>
@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
                 <h4 className="lasthead">微信公众号</h4>
                 <div className="footer-list">
                   <img
-                    src="https://serverless-article-picture.oss-cn-hangzhou.aliyuncs.com/1648814758343_20220401120558862369.png"
+                    src="https://img.alicdn.com/imgextra/i3/O1CN016kRQ1A24zePZnV87T_!!6000000007462-0-tps-528-528.jpg"
                     className="w-24"
                     alt="微信公众号"
                   />
