@@ -196,18 +196,18 @@ const ResourcePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    // 使用 URLSearchParams 解析查询字符串
-    const searchParams = new URLSearchParams(url.search);
-    // 提取具体的查询参数
-    const search = searchParams.get('search');
-    if (search && !searchQuery) {
-      setSearchQuery(search);
-    }
+    // const url = new URL(location.href);
+    // // 使用 URLSearchParams 解析查询字符串
+    // const searchParams = new URLSearchParams(url.search);
+    // // 提取具体的查询参数
+    // const search = searchParams.get('search');
+    // if (search && !searchQuery) {
+    //   setSearchQuery(search);
+    // }
     setPage(1);
     fetchTotalPages(searchQuery);
     fetchData(searchQuery, 1); // Fetch data whenever a filter changes
-  }, [selectedCategory, selectedProvider, selectedType, selectedSort, selectedVersion, window.location.href]);
+  }, [selectedCategory, selectedProvider, selectedType, selectedSort, selectedVersion]);
 
   // useEffect(() => {
   //   const url = new URL(window.location.href);
