@@ -45,9 +45,10 @@ const Header = (props: HeaderProps) => {
   }, [showSearch]);
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    setShowSearch(false);
     event.preventDefault();
     const keyword = (event.currentTarget.elements.namedItem("keyword") as HTMLInputElement).value;
-    router.push(`/resource?search=${keyword}`);
+    router.push(`/?search=${keyword}`);
   };
 
   return (
@@ -72,7 +73,7 @@ const Header = (props: HeaderProps) => {
               DEVS
             </Link>
             <span className="text-white">|</span>
-            <Link href="/resource" className="nav-link text-white">
+            <Link href="/" className="nav-link text-white">
               主页
             </Link>
             {/* <span className="text-white">|</span>
@@ -109,10 +110,11 @@ const Header = (props: HeaderProps) => {
 
             <button
               className="nav-btn w-[120px] h-[40px] items-center justify-center rounded-[32px] text-white border border-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800 flex"
+              onClick={() => window.open("https://github.com/serverless-devs/Serverless-Devs", "_blank")}
             >
               <a
-                href="https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/zh/0.0.2/serverless_registry_model/readme.md"
-                target="_blank"
+                // href="https://github.com/serverless-devs/Serverless-Devs"
+                // target="_blank"
                 rel="noopener noreferrer"
                 className="text-white text-[12px]"
               >
@@ -124,7 +126,7 @@ const Header = (props: HeaderProps) => {
             {/* Search Overlay */}
             {showSearch && (
               <div className="fixed inset-0 bg-gray-900 bg-opacity-90 flex items-center justify-center z-50">
-                <div className="absolute top-0 right-0 mt-4 mr-4">
+                <div className="absolute top-0 right-0 left-0">
                   <a
                     href="#0"
                     className="text-white"

@@ -4,7 +4,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFire,
@@ -153,16 +152,16 @@ export default function CardItem({ item }: CardItemProps) {
             textOverflow: "ellipsis",
           }}
         >
-          {/* {item.description &&
+          {item.description &&
             (() => {
               try {
                 const parsedDescription = JSON.parse(item.description.replace(/'/g, '"'));
                 return parsedDescription.zh;
               } catch (error) {
-                console.error("Failed to parse description:", error);
+                // console.error("Failed to parse description:", error);
                 return item.description; 
               }
-            })()} */}
+            })()}
         </Typography>
         </div>
       </div>

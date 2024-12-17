@@ -1,346 +1,865 @@
 "use client";
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCalendarAlt, faUser, faArrowRight, faArrowUp, faFire, faDesktop } from '@fortawesome/free-solid-svg-icons';
-import '../app/responsive.css';
-import '../app/style.css';
-import BlogSection from './components/main/BlogSection';
-import Header from './components/Header';
-import Footer from './components/Footer';
 
-const HomePage = () => {
-  const [showSearch, setShowSearch] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
-  const router = useRouter();
-  const toggleSearch = () => {
-    setShowSearch(!showSearch);
+import React, { useEffect, useState, useLayoutEffect } from "react";
+// import { useSearchParams } from "next/navigation";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import CardItem from "./components/card/CardItem";
+import OldCardItem from "./components/card/CardItemOld";
+
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Checkbox from "@mui/material/Checkbox";
+import Box from "@mui/material/Box";
+import LoadingPopup from './components/LoadingPopup';
+import Button from "@mui/material/Button";
+import { Pagination } from "@mui/material";
+
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
+const v2TypeMap = {
+  '1': 'Component',
+  '2': 'Plugin',
+  '3': 'Application'
+}
+
+const v2CategoryMap = {
+  "云应用": "14",
+  "基础云服务": "15",
+  "Web框架": "16",
+  "全栈应用": "17",
+  "人工智能": "18",
+  "音视频处理": "19",
+  "图文处理": "20",
+  "监控告警": "21",
+  "数据处理": "22",
+  "IoT": "23",
+  "新手入门": "24",
+  "其它": "25",
+  "基础云产品": "27",
+  "函数Connector": "28",
+  "Jamstack": "29",
+  "开源项目": "30",
+  "Higress": "31"
+};
+
+const config =
+{
+  "dpr": 0.5,
+  "background": "6483ff",
+  "palette": [
+    "ffffff",
+    "6218FF",
+    "3400FA",
+    "9968FF",
+    "1A79FF"
+  ],
+  "offsets": [1.02, 1.5, 1.05, -0.95, -1.75, 0.27, 0.99, -1.5, 0.95, 0.54],
+  "twist": [2, -0.5, 0.24, 5.7, 0.68, 0.15, 1.5, 1, 0.07, 0.04],
+  "symbolColor": "#6483FF"
+}
+
+interface Params {
+  lang?: string;
+  type?: string;
+  category?: string | null;
+  provider?: string | null;
+  page?: string | number;
+  platform?: string | null;
+  search?: string | null;
+  keyword?: string | null;
+  [key: string]: any;
+}
+
+type Package = {
+  name?: string;
+  type?: string;
+  oldType?: number;
+  package?: string;
+  download?: number;
+  latest_create?: string;
+  version?: { created_at: string };
+  source?: string;
+  packageName?: string;
+  description?: string;
+  zipball_url?: string;
+};
+
+type Category = {
+  id: string;
+  name: string;
+};
+
+type Provider = {
+  id: string;
+  name: string;
+};
+
+const ResourcePage: React.FC = () => {
+  const [data, setData] = useState<Package[]>([]);
+  const [sortedData, setSortedData] = useState<Package[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
+  const [selectedVersion, setSelectedVersion] = useState<string>('v3');
+  const [selectedSort, setSelectedSort] = useState<string | null>('time');
+  const [openCategories, setOpenCategories] = useState<boolean>(false);
+  const [openProviders, setOpenProviders] = useState<boolean>(false);
+  const [openVersion, setOpenVersion] = useState<boolean>(false);
+  const [openSort, setOpenSort] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [oldData, setOldData] = useState<Package[]>([]);
+  const [selectedType, setSelectedType] = useState<string>('3');
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  const versions = [
+    { id: 2, name: 'v2' },
+    { id: 3, name: 'v3' },
+  ]
+
+  const sorts = [
+    { id: 'time', name: '按时间排序' },
+    { id: 'download', name: '按下载量排序' },
+    { id: 'relative', name: '按相关度排序' }
+  ]
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    fetchData(searchQuery, value);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
-      }
-    };
+  // const searchParams = useSearchParams();
 
-    window.addEventListener('scroll', handleScroll);
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/common/categories",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setCategories(result.body);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+  const fetchProviders = async () => {
+    try {
+      const response = await fetch(
+        "https://api.devsapp.cn/v3/common/providers",
+        {
+          headers: {
+            lang: "zh",
+          },
+        }
+      );
+      const result = await response.json();
+      setProviders(result.body);
+    } catch (error) {
+      console.error("Error fetching providers:", error);
+    }
+  };
+
+  const fetchTotalPages = async (search: string = "") => {
+    if (selectedVersion[1] === '2') return;
+    const res = await fetchData(search, -1, false);
+    try {
+      // 向上取整
+      setTotalPages(Math.ceil(res.length / 20));
+    } catch (error) {
+      setTotalPages(1);
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useLayoutEffect(() => {
+    fetchCategories();
+    fetchProviders();
   }, []);
 
   useEffect(() => {
-    if (showSearch) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
+    const url = new URL(window.location.href);
+    // 使用 URLSearchParams 解析查询字符串
+    const searchParams = new URLSearchParams(url.search);
+    // 提取具体的查询参数
+    const search = searchParams.get('search');
+    if (search && !searchQuery) {
+      setSearchQuery(search);
     }
-  }, [showSearch]);
+    setPage(1);
+    fetchTotalPages(searchQuery);
+    fetchData(searchQuery, 1); // Fetch data whenever a filter changes
+  }, [selectedCategory, selectedProvider, selectedType, selectedSort, selectedVersion, window.location.href]);
 
-  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const keyword = (event.currentTarget.elements.namedItem('keyword') as HTMLInputElement).value;
-    router.push(`/resource?search=${keyword}`);
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+
+  //   // 使用 URLSearchParams 解析查询字符串
+  //   const searchParams = new URLSearchParams(url.search);
+
+  //   // 提取具体的查询参数
+  //   const search = searchParams.get('search');
+  //   if (search) {
+  //     setSearchQuery(search || "");
+  //     fetchTotalPages(search);
+  //     fetchData(search);
+  //   }
+  // }, [window.location.href])
+
+  const fetchData = async (search: string | null = "", page = 1, needSetData = true) => {
+    setLoading(true);
+    let url: URL, params: Params;
+    if (selectedVersion[1] === '2') {
+      url = new URL(
+        "https://registry.devsapp.cn/package/search"
+      );
+      params = {
+        type: v2TypeMap[selectedType as keyof typeof v2TypeMap],
+        category: v2CategoryMap[selectedCategory as keyof typeof v2CategoryMap],
+        provider: selectedProvider,
+        keyword: search,
+        sort: selectedSort === 'relative' ? undefined : selectedSort,
+      };
+      // 使用 URLSearchParams 将 params 添加到 URL 查询字符串中
+      const searchParams = new URLSearchParams();
+      for (const [key, value] of Object.entries(params)) {
+        if (value !== null && value !== undefined && value !== "") {
+          searchParams.append(key, value.toString());
+        }
+      }
+      const body = searchParams.toString();
+      try {
+        const response = await fetch(url.toString(), { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', lang: "zh" }, body });
+        const result = await response.json();
+        setTotalPages(Math.ceil(result.Response.length / 20));
+        if (needSetData) {
+          setOldData(result.Response.slice((page - 1) * 20, page * 20));
+        }
+        setLoading(false);
+        return result.Response;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+        return [];
+      }
+    } else {
+      url = new URL(
+        "https://api.devsapp.cn/v3/packages/releases"
+      );
+      params = {
+        lang: "zh",
+        type: selectedType,
+        category: selectedCategory,
+        provider: selectedProvider,
+        page: page,
+        platform: selectedVersion[1],
+        sort: selectedSort,
+        search
+      };
+      Object.keys(params).forEach((key) => {
+        if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
+          url.searchParams.append(key, params[key] as string);
+        }
+      });
+      try {
+        const response = await fetch(url.toString(), { headers: { lang: "zh" } });
+        const result = await response.json();
+        if (needSetData) {
+          // setOldData([]);
+          setData(result.body);
+        }
+        setLoading(false);
+        return result.body;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+        return [];
+      }
+    }
+  };
+
+  useEffect(() => {
+    // return () => {
+      let combinedData: Package[] = [];
+      if (selectedVersion[1] === '2') {
+        combinedData = [
+          // ...data.map((pkg) => ({
+          //   ...pkg,
+          //   source: "new",
+          //   packageName: pkg.name,
+          // })),
+          ...oldData.map((pkg) => ({
+            ...pkg,
+            source: "old",
+            packageName: pkg.package,
+          })),
+        ];
+      } else {
+        combinedData = [
+          ...data.map((pkg) => ({
+            ...pkg,
+            source: "new",
+            packageName: pkg.name,
+          })),
+          // ...oldData.map((pkg) => ({
+          //   ...pkg,
+          //   source: "old",
+          //   packageName: pkg.package,
+          // })),
+        ];
+      }
+      
+      setSortedData(combinedData);
+    // }
+  }, [data, oldData]);
+
+  const handleCategoryClick = (category: string) => {
+    const newCategory = selectedCategory === category ? null : category;
+    setSelectedCategory(newCategory);
+  };
+
+  const handleProviderClick = (provider: string) => {
+    const newProvider = selectedProvider === provider ? null : provider;
+    setSelectedProvider(newProvider);
+  };
+
+  const handleVersionClick = (version: string) => {
+    setSelectedVersion(version);
+  };
+
+  const handleSortClick = (sort: string) => {
+    setSelectedSort(sort);
+  };
+
+  const toggleVersion = () => {
+    setOpenVersion(!openVersion);
+  };
+
+  const toggleSort = () => {
+    setOpenSort(!openSort);
+  };
+
+  const toggleCategories = () => {
+    setOpenCategories(!openCategories);
+  };
+
+  const toggleProviders = () => {
+    setOpenProviders(!openProviders);
+  };
+
+  const clearFilters = () => {
+    setSelectedCategory(null);
+    setSelectedProvider(null);
+    setSelectedType('3');
+    fetchTotalPages();
+    fetchData();
+  };
+
+  const handleTypeButtonClick = (type: string) => {
+    let typeValue: string | null = null;
+    switch (type) {
+      case 'Component':
+        typeValue = '1';
+        break;
+      case 'Plugin':
+        typeValue = '2';
+        break;
+      case 'Project':
+        typeValue = '3';
+        break;
+      default:
+        typeValue = '3';
+    }
+    setSelectedType(typeValue);
   };
 
   return (
-    <div>
-      <Header />
+    <div style={{ backgroundColor: "#121316", minHeight: "100vh" }}>
+      <Header sticky />
+      {loading && <LoadingPopup />}
 
-       {/* Banner */}
-      <section className="banner two">
+      <section
+        id="breadcrumb-area"
+        className="breadcrumb-area"
+        style={{
+          backgroundImage: "url('/image/banner.svg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          padding: "100px 0",
+          textAlign: "center",
+        }}
+      >
         <div className="container">
-          <div className="flex justify-center">
-            <div className="lg:w-10/12 wow fadeInUp" data-wow-delay="0.3s">
-              <div className="banner-content text-center">
-                <h1 className="text-6xl font-bold text-white">Serverless Registry</h1>
-                <p className="text-lg mt-5 mb-2 text-white">
-                  Serverless 包管理平台：让你像使用手机一样玩转 Serverless 架构
-                </p>
-                <form onSubmit={handleSearchSubmit} className="relative">
-                  <div className="form-group flex items-center mt-4">
-                    <input
-                      type="text"
-                      placeholder="搜索 Package ..."
-                      className="form-control pr-10 p-2 border border-gray-300 rounded w-full"
-                      name="keyword"
-                    />
-                    <button type="submit" className="absolute right-0 pr-3 flex items-center text-gray-500 bg-transparent border-none cursor-pointer">
-                      <FontAwesomeIcon icon={faSearch} />
-                    </button>
-                  </div>
-                </form>
-              </div>
+          <div className="content text-white">
+            <h1
+              style={{
+                fontSize: "3.0rem",
+                fontWeight: "bold",
+                marginBottom: "30px",
+                color: "#FFFFFF",
+              }}
+            >
+              Serverless 包管理平台
+            </h1>
+            <p style={{ fontSize: "1.2rem", opacity: 0.7, color: "#FFFFFF", marginBottom: "30px" }}>
+              让你像使用手机一样玩转Serverless架构
+            </p>
+
+            <div className="search-container relative inline-block w-full max-w-md">
+              <input
+                type="text"
+                placeholder="搜索 Package ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    fetchTotalPages(searchQuery);
+                    fetchData(searchQuery, 1);
+                    setPage(1);
+                  }
+                }}
+                className="w-full p-3 pl-4 pr-12 border border-white rounded-md bg-opacity-25 text-white placeholder-white"
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "20px",
+                  height: "45px",
+                  borderColor: "#b4b6c0",
+                  color: "#adb4f5",
+                }}
+              />
+              <span className="absolute inset-y-0 right-4 flex items-center">
+                <img
+                  src="/image/search.svg"
+                  alt="Search Icon"
+                  className="w-5 h-5"
+                />
+              </span>
             </div>
           </div>
         </div>
       </section>
-      {/* Banner End */}
-         
 
-      {/* Why Choose Start */}
-
-      <div className="why-choose py-12">
-        <div className="container mx-auto">
-          <div className="flex justify-center">
-            <div className="lg:w-6/12 text-center wow fadeInUp" data-wow-delay="0.3s">
-              <div className="section-head">
-                <h2 className="text-3xl font-bold mb-4">为什么选择 Serverless Registry</h2>
-                <p className="text-lg text-gray-700">
-                  Serverless Registry 是一个无厂商锁定的 Serverless 包管理平台，以开源项目 Serverless Devs 作为工具，可以帮助开发者非常简单、方便、快速的进行上手 Serverless 架构，助力开发者可以像使用手机一样，玩转 Serverless 架构。
-                </p>
-              </div>
-            </div>
+      {/* Buttons Section */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "20px",
+          marginBottom: "40px",
+        }}
+      >
+        {/* <Button
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#252528",
+            border: "1px solid #9497a1",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(90deg, #2227f2, #6638ff)",
+              borderRadius: "20px",
+              padding: "2px 8px",
+              marginRight: "8px",
+              color: "#FFFFFF",
+              fontWeight: "bold",
+            }}
+          >
+            HOT!
           </div>
-          <div className="flex flex-wrap mt-8">
-            <div className="xl:w-3/12 md:w-6/12 text-center wow fadeInUp" data-wow-delay="0.2s">
-              <div className="chose-box p-4">
-                <div className="thumb mb-4">
-                  <img src="/picture/choose-1.png" alt="Choose 1" className="mx-auto" />
-                </div>
-                <h5 className="text-xl font-semibold mb-2">无厂商锁定</h5>
-                <p className="text-gray-700">
-                  不限厂商，符合 <a href="https://github.com/Serverless-Devs/Serverless-Devs/blob/master/spec/zh/0.0.2/serverless_package_model/readme.md" target="_blank" className="text-blue-500">SPM 规范</a>，就可以分享给其他 Serverlessor
-                </p>
-              </div>
-            </div>
-            <div className="xl:w-3/12 md:w-6/12 text-center wow fadeInUp" data-wow-delay="0.3s">
-              <div className="chose-box p-4">
-                <div className="thumb mb-4">
-                  <img src="/picture/choose-2.png" alt="" className="mx-auto" />
-                </div>
-                <h5 className="text-xl font-semibold mb-2">开源建设</h5>
-                <p className="text-gray-700">
-                  规范、工具、网站，完全开源建设，以开源驱动行业繁荣
-                </p>
-              </div>
-            </div>
-            <div className="xl:w-3/12 md:w-6/12 text-center wow fadeInUp" data-wow-delay="0.4s">
-              <div className="chose-box p-4">
-                <div className="thumb mb-4">
-                  <img src="/picture/choose-3.png" alt="" className="mx-auto" />
-                </div>
-                <h5 className="text-xl font-semibold mb-2">开放生态</h5>
-                <p className="text-gray-700">
-                  基于 Github 授权，人人可参与，人人可贡献，人人可分享
-                </p>
-              </div>
-            </div>
-            <div className="xl:w-3/12 md:w-6/12 text-center wow fadeInUp" data-wow-delay="0.5s">
-              <div className="chose-box p-4">
-                <div className="thumb mb-4">
-                  <img src="/picture/choose-4.png" alt="" className="mx-auto" />
-                </div>
-                <h5 className="text-xl font-semibold mb-2 mt-2">免费提供</h5>
-                <p className="text-gray-700">
-                  Registry 平台本身不涉及任何收费项，免费开放给开发者
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+          <img src="/image/AI_button.svg" alt="AI 工具" style={{ width: "24px", marginRight: "8px" }} />
+          AI 工具
+        </Button> */}
+        <Button
+          onClick={() => handleTypeButtonClick('Project')}
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            background: selectedType === '3' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            border: "1px solid #73757d",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <img src="/image/application_icon.svg" alt="应用" style={{ width: "24px", marginRight: "8px" }} />
+          应用
+        </Button>
+        <Button
+          onClick={() => handleTypeButtonClick('Component')}
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            background: selectedType === '1' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            border: "1px solid #73757d",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <img src="/image/comp_icon.svg" alt="组件" style={{ width: "24px", marginRight: "8px" }} />
+          组件
+        </Button>
+        <Button
+          onClick={() => handleTypeButtonClick('Plugin')}
+          style={{
+            margin: "0 10px",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            background: selectedType === '2' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            border: "1px solid #73757d",
+            borderRadius: "20px",
+            padding: "8px 16px",
+          }}
+        >
+          <img src="/image/plug_icon.svg" alt="插件" style={{ width: "24px", marginRight: "8px" }} />
+          插件
+        </Button>
       </div>
-      {/* Why Choose End */}
 
-      {/* Featured Start */}
-      {/* <section className="feature item three py-12">
-      <div className="container mx-auto">
-        <div className="flex flex-wrap justify-between items-center">
-          <div className="lg:w-5/12 md:w-6/12 wow fadeInUp" data-wow-delay="0.3s">
-            <div className="section-head">
-              <h2 className="text-3xl font-bold mb-4">热门应用</h2>
-              <p className="text-lg text-gray-700">
-                开发者们热衷的热门应用案例，可以通过 Serverless Devs 开发者工具快速体验
-              </p>
+      <section
+        className="main-content-section"
+        style={{ backgroundColor: "transparent" }}
+      >
+        <div className="container mx-auto flex flex-wrap py-12">
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 250,
+              bgcolor: "transparent",
+              overflowY: "auto",
+              maxHeight: 600,
+              marginRight: 5,
+            }}
+            component="nav"
+            aria-labelledby="nested-list-subheader"
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ color: "#f2f2f5", fontSize: "20px" }}>过滤器</p>
+              <Button
+                onClick={clearFilters}
+                style={{
+                  color: "#aaadb9",
+                  backgroundColor: "#1b1c1e",
+                  border: "1px solid #FFFFFF",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "5px 15px",
+                  borderRadius: "20px",
+                  borderColor: "#292a31",
+                }}
+              >
+                <img
+                  src="/image/cancel_icon.svg"
+                  alt="Cancel Icon"
+                  style={{ width: "16px", height: "16px", marginRight: "8px" }}
+                />
+                清除
+              </Button>
             </div>
-          </div>
-          <div className="lg:w-3/12 md:w-6/12 wow fadeInUp" data-wow-delay="0.3s">
-            <div className="link text-center md:text-right">
-              <Link href="/application" className="main-btn bg-blue-500 text-white py-2 px-4 rounded">
-                查看所有应用案例
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section> */}
 
-      {/* <section className="feature item three py-12">
-        <div className="container mx-auto">
-          <div className="flex flex-wrap justify-between items-center">
-            <div className="lg:w-5/12 md:w-6/12 wow fadeInUp" data-wow-delay="0.3s">
-              <div className="section-head">
-                <h2 className="text-3xl font-bold mb-4">热门应用</h2>
-                <p className="text-lg text-gray-700">
-                  开发者们热衷的热门应用案例，可以通过 Serverless Devs 开发者工具快速体验
-                </p>
+            {/* version section */}
+            <ListItemButton onClick={toggleVersion}>
+              <ListItemIcon>
+                {openVersion ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary="版本"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedVersion ? 1 : 0}
               </div>
-            </div>
-            <div className="lg:w-3/12 md:w-6/12 wow fadeInUp" data-wow-delay="0.3s">
-              <div className="link text-center md:text-right">
-                <Link href="/application" className="main-btn bg-blue-500 text-white py-2 px-4 rounded">
-                  查看所有应用案例
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="container-fluid mx-auto mt-8">
-          <div className="flex justify-center">
-            <div className="w-full wow fadeInUp" data-wow-delay="0.3s">
-              <div className="totalfetaure owl-carousel owl-theme" id="itemlist"></div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
-      {/* Featured End */}
-
-      {/* Testimonial Start */}
-      {/* <div className="testomonial-two">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-lg-6 col-md-12 wow fadeInUp" data-wow-delay="0.3s">
-              <div className="section-head text-center">
-                <h2 className="title">用户寄语</h2>
-                <p className="text">
-                  Serverless 社区开发者，对 Serverless Registry 说 ...
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="row justify-content-xl-end justify-content-center">
-            <div className="col-xl-12 col-lg-12 wow fadeInUp">
-              <div className="testotwo owl-carousel owl-theme">
-                <div className="single">
-                  <a className="icon" href="https://github.com/anycodes">
-                    <img
-                      style={{ width: '240px' }}
-                      src="https://serverless-article-picture.oss-cn-hangzhou.aliyuncs.com/1648812302258_20220401112502572485.png"
-                      alt=""
-                    />
-                  </a>
-                  <div className="content">
-                    <div className="thumv">
-                      <img src="static/picture/quate.png" alt="" />
-                    </div>
-                    <p className="text">
-                      "Serverless Registry 是一个更为开放的平台，类似于 Python 的 Pypi，Node.js 的 NPM，都是生态基石的一部分。"
-                    </p>
-                    <div className="man">
-                      <div className="content">
-                        <h5 className="name">
-                          <a href="#0"> Anycodes </a>
-                        </h5>
-                        <span className="position">Anycodes.cn 创始人</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="single">
-                  <a className="icon" href="https://github.com/qiuyu99627">
-                    <img
-                      style={{ width: '240px' }}
-                      src="https://serverless-article-picture.oss-cn-hangzhou.aliyuncs.com/1648812256705_20220401112423087042.png"
-                      alt=""
-                    />
-                  </a>
-                  <div className="content">
-                    <div className="thumv">
-                      <img src="static/picture/quate.png" alt="" />
-                    </div>
-                    <p className="text">
-                      "如果说 Serverless 被称为是未来云计算的宠儿，那么我觉得 Serverless Registry 是伴随其成长的生态环境。"
-                    </p>
-                    <div className="man">
-                      <div className="content">
-                        <h5 className="name">
-                          <a href="#0"> Qiuyu Chen </a>
-                        </h5>
-                        <span className="position">Nudt 学生</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="single">
-                  <a className="icon" href="#0">
-                    <img
-                      style={{ width: '240px' }}
-                      src="https://serverless-article-picture.oss-cn-hangzhou.aliyuncs.com/1648812391399_20220401112632053766.png"
-                      alt=""
-                    />
-                  </a>
-                  <div className="content">
-                    <div className="thumv">
-                      <img src="static/picture/quate.png" alt="" />
-                    </div>
-                    <p className="text">
-                      "从 Serverless Devs 到 Serverless Registry，Serverless 的开源生态正在不断的完善，不断的丰富起来。"
-                    </p>
-                    <div className="man">
-                      <div className="content">
-                        <h5 className="name">
-                          <a href="#0"> Jessie </a>
-                        </h5>
-                        <span className="position"> Serverless 爱好者</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="single">
-                  <a
-                    className="icon"
-                    href="https://avatars.githubusercontent.com/u/5129967?v=4"
+            </ListItemButton>
+            <Collapse in={openVersion} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {versions.map((version) => (
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    key={version.id}
+                    onClick={() => handleVersionClick(version.name)}
                   >
-                    <img
-                      style={{ width: '240px' }}
-                      src="https://serverless-article-picture.oss-cn-hangzhou.aliyuncs.com/1648812493596_20220401112813906064.png"
-                      alt=""
+                    <Checkbox
+                      checked={selectedVersion === version.name}
+                      onChange={() => handleVersionClick(version.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
                     />
-                  </a>
-                  <div className="content">
-                    <div className="thumv">
-                      <img src="static/picture/quate.png" alt="" />
-                    </div>
-                    <p className="text">
-                      "Serverless Devs Model 是一套基础规范，Devs 和 Registry 都是这套规范的最佳实践，也是面向未来的一种渴望。"
-                    </p>
-                    <div className="man">
-                      <div className="content">
-                        <h5 className="name">
-                          <a href="#0"> heimanba </a>
-                        </h5>
-                        <span className="position">Serverless Devs 贡献者</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    <ListItemText
+                      primary={version.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+
+            <ListItemButton onClick={toggleSort}>
+              <ListItemIcon>
+                {openVersion ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary="排序"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedSort ? 1 : 0}
               </div>
+            </ListItemButton>
+            <Collapse in={openSort} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {sorts.map((sort) => (
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    key={sort.id}
+                    onClick={() => handleSortClick(sort.id)}
+                  >
+                    <Checkbox
+                      checked={selectedSort === sort.id}
+                      onChange={() => handleSortClick(sort.id)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
+                    />
+                    <ListItemText
+                      primary={sort.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+
+            {/* Categories Section */}
+            <ListItemButton onClick={toggleCategories}>
+              <ListItemIcon>
+                {openCategories ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary="分类"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedCategory ? 1 : 0}
+              </div>
+            </ListItemButton>
+            <Collapse in={openCategories} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {categories.map((category) => (
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.name)}
+                  >
+                    <Checkbox
+                      checked={selectedCategory === category.name}
+                      onChange={() => handleCategoryClick(category.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
+                    />
+                    <ListItemText
+                      primary={category.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+
+            {/* Providers Section */}
+            <ListItemButton onClick={toggleProviders}>
+              <ListItemIcon>
+                {openProviders ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary="云厂商"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedProvider ? 1 : 0}
+              </div>
+            </ListItemButton>
+            <Collapse in={openProviders} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {providers.map((provider) => (
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    key={provider.id}
+                    onClick={() => handleProviderClick(provider.name)}
+                  >
+                    <Checkbox
+                      checked={selectedProvider === provider.name}
+                      onChange={() => handleProviderClick(provider.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
+                    />
+                    <ListItemText
+                      primary={provider.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+          </Box>
+
+          {/* Content Grid */}
+          <div className="w-full md:w-7/12 lg:w-9/12">
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                gap: "30px",
+              }}
+            >
+              {sortedData.map((item, index) =>
+                item.source === "new" ? (
+                  <CardItem
+                    key={index}
+                    item={{
+                      name: item.name || "Unknown Name",
+                      type: item.type || "Unknown Type",
+                      download: item.download || 0,
+                      latest_create: item.latest_create || "",
+                      description: item.description,
+                      zipball_url: item.zipball_url,
+                    }}
+                  />
+                ) : (
+                  <OldCardItem
+                    key={index}
+                    item={{
+                      oldType: Number(item.type) || 0,
+                      package: item.package || "Unknown Package",
+                      download: item.download || 0,
+                      version: item.version || { created_at: "" },
+                      description: item.description,
+                      // zipball_url: item.zipball_url,
+                    }}
+                  />
+                )
+              )}
             </div>
+            <ThemeProvider theme={darkTheme}>
+              <Pagination count={totalPages} size="large" page={page} onChange={handlePageChange} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }} />
+            </ThemeProvider>
           </div>
         </div>
-      </div> */}
-      {/* Testimonial End */}
-
-      <BlogSection />
-
-      {/* Footer Area START */}
+      </section>
       <Footer />
-
-      {/* Back to top start */}
-      {/* <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg">
-        <a href="#0" className="flex items-center justify-center h-full w-full">
-          <FontAwesomeIcon icon={faArrowUp} />
-        </a>
-      </div> */}
-      {/* Back to top end */}
     </div>
+
+
   );
 };
 
-export default HomePage;
+export default ResourcePage;

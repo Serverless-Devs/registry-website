@@ -40,6 +40,34 @@ interface PackageDetails {
   provider: string[];
   tags: string[];
   type: string;
+  create?: string;
+  download?: number;
+}
+
+interface OldPackageDetails {
+  category: string;
+  commands: {};
+  create: string;
+  description: string;
+  download: number;
+  flowyaml: any[];
+  home: null | string;
+  name: string;
+  props: {};
+  provider: string[];
+  readme: string;
+  service: {};
+  syaml: string;
+  tags: string[];
+  type: string;
+  user: string;
+  userInformation: {
+    user: string;
+    avatar_url: string;
+    html_url: string;
+  };
+  version: string;
+  version_body: string;
 }
 
 interface PackageHistoryItem {
@@ -65,6 +93,29 @@ async function fetchPackageDetail(
     return "未找到指定资源";
   }
 }
+
+const fetchOldPackageDetail = async (packageName: string) => {
+  const base_url = "https://registry.devsapp.cn";
+  try {
+    const response = await fetch(`${base_url}/package/content`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `name=${packageName}`, 
+    });
+    const result = await response.json();
+
+    if (result.Error === "GetParameterFailed" || !result.Response) {
+      console.error("Unable to fetch package details.");
+      return "未找到指定资源";
+    } else {
+      return result.Response;
+    }
+  } catch (error) {
+    console.error("Error fetching package details:", error);
+  }
+};
 
 const fetchCommonData = async (packageName: string) => {
   try {
@@ -92,6 +143,13 @@ async function fetchPackageHistory(
       `https://api.devsapp.cn/v3/packages/${packageName}/release`
     );
     if (!res.ok) {
+      const res2 = await fetch(
+        `https://registry.devsapp.cn/simple/${packageName}/releases`
+      );
+      if (res2.ok) {
+        const data = await res2.json();
+        return data.Response;
+      }
       throw new Error("Failed to fetch package history");
     }
     const data = await res.json();
@@ -353,7 +411,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
             <div style={statsLabelStyle}>工具方法</div>
             <Tooltip
               title={
-                packageDetail?.type == "Project"
+                (packageDetail?.type == "Project" || packageDetail?.type == "application")
                   ? "部署到阿里云函数计算"
                   : "无法部署"
               }
@@ -362,11 +420,11 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
               <span>
                 <Button
                   style={
-                    packageDetail?.type == "Project"
+                    (packageDetail?.type == "Project" || packageDetail?.type == "application")
                       ? deployButtonStyle
                       : deployButtonDisabledStyle
                   }
-                  disabled={packageDetail?.type !== "Project"}
+                  disabled={packageDetail?.type !== "Project" && packageDetail?.type !== "application"}
                   onClick={() =>
                     window.open(
                       `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`,
@@ -389,7 +447,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
           {/* 分割线 */}
           <div className="border-r border-[#4C505D] h-[32px]"></div>
           <div style={statsItemStyle as any}>
-            <div style={statsNumberStyle}>{pkgInfo?.download}</div>
+            <div style={statsNumberStyle}>{pkgInfo?.download || packageDetail?.download}</div>
             <div style={statsLabelStyle}>下载量</div>
             <ClickAwayListener onClickAway={handleTooltipClose}>
               <div>
@@ -431,7 +489,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
             <Button
               style={codeButtonStyle}
               onClick={() => {
-                window.open(packageDetail?.zipball_url, "_blank");
+                window.open(packageDetail?.zipball_url || packageHistory[0].zipball_url, "_blank");
               }}
             >
               <span className="flex items-center justify-center">
@@ -460,7 +518,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
           {/* 分割线 */}
           <div className="border-r border-[#4C505D] h-[32px]"></div>
           <div style={statsItemStyle as any}>
-            <div style={statsNumberStyle}>{pkgInfo?.download}</div>
+            <div style={statsNumberStyle}>{pkgInfo?.download || packageDetail?.download}</div>
             <div style={statsLabelStyle}>下载量</div>
           </div>
           <div className="border-r border-[#4C505D] h-[32px]"></div>
@@ -471,7 +529,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
         </div>
         <Tooltip
           title={
-            packageDetail?.type == "Project"
+            (packageDetail?.type == "Project" || packageDetail?.type == "application")
               ? "部署到阿里云函数计算"
               : "无法部署"
           }
@@ -481,11 +539,11 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
             <Button
               className="!w-full"
               style={
-                packageDetail?.type == "Project"
+                (packageDetail?.type == "Project" || packageDetail?.type == "application")
                   ? deployButtonStyle
                   : deployButtonDisabledStyle
               }
-              disabled={packageDetail?.type !== "Project"}
+              disabled={packageDetail?.type !== "Project" && packageDetail?.type !== "application"}
               onClick={() =>
                 window.open(
                   `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`,
@@ -543,7 +601,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
           className="!w-full"
           style={codeButtonStyle}
           onClick={() => {
-            window.open(packageDetail?.zipball_url, "_blank");
+            window.open(packageDetail?.zipball_url || packageHistory[0].zipball_url, "_blank");
           }}
         >
           <span className="flex items-center justify-center">
@@ -562,10 +620,13 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
   useEffect(() => {
     async function fetchData() {
       const detail = await fetchPackageDetail(params.packageName);
-      if (detail === "未找到指定资源") {
+      const detailOld = await fetchOldPackageDetail(params.packageName);
+      if (detail === "未找到指定资源" && detailOld.Message === "未知错误") {
         setNotFound(true);
-      } else {
+      } else if (detail !== "未找到指定资源") {
         setPackageDetail(detail);
+      } else if (detailOld.Message !== "未知错误") {
+        setPackageDetail(detailOld);
       }
 
       const history = await fetchPackageHistory(params.packageName);
@@ -624,7 +685,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
                     </div>
                     <span className=" text-opacity-70 text-[#F4F4F6]">
                       发布于{" "}
-                      {formatDateWithHyphen(packageDetail?.created_at || "")}
+                      {formatDateWithHyphen(packageDetail?.created_at || packageDetail?.create || "")}
                     </span>
                   </div>
                 </div>
@@ -653,7 +714,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
                     <div style={authorFontStyle}>devs</div>
                   </div>
                   <span className="text-opacity-70 text-[#F4F4F6]">
-                    发布于 {formatDateWithHyphen(packageDetail?.created_at || "")}
+                    发布于 {formatDateWithHyphen(packageDetail?.created_at || packageDetail?.create || "")}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2 text-opacity-70 text-[#F4F4F6]">
