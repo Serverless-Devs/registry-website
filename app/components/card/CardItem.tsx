@@ -65,6 +65,30 @@ export default function CardItem({ item }: CardItemProps) {
     }
   };
 
+  async function fetchPackageHistory(
+    packageName: string
+  ): Promise<any> {
+    try {
+      const res = await fetch(
+        `https://api.devsapp.cn/v3/packages/${packageName}/release`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch package history");
+      }
+      const data = await res.json();
+      return data.body;
+    } catch (error) {
+      console.error("Error fetching package history:", error);
+      return [];
+    }
+  }
+
+  const handleDownload = async (item: any) => {
+    const data = await fetchPackageHistory(item.name);
+    const pkg = data[0];
+    window.open(pkg.zipball_url, '_blank');
+  };
+
   return (
     <StyledCard>
       {/* Icon Box */}
@@ -184,7 +208,7 @@ export default function CardItem({ item }: CardItemProps) {
             {/* Download button */}
             <button
               onClick={() => {
-                window.open(item.zipball_url || "", "_blank"); 
+                handleDownload(item); 
               }}
               className="download btn btn-outline-secondary"
               style={{
