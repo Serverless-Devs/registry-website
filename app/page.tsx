@@ -417,7 +417,7 @@ const ResourcePage: React.FC = () => {
                 color: "#FFFFFF",
               }}
             >
-              Serverless 包管理平台
+              Serverless Devs 包管理平台
             </h1>
             <p style={{ fontSize: "1.2rem", opacity: 0.7, color: "#FFFFFF", marginBottom: "30px" }}>
               让你像使用手机一样玩转Serverless架构
