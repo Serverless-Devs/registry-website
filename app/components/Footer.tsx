@@ -13,10 +13,10 @@ const Footer: React.FC = () => {
             >
               <div className="footer-box one">
                 <div className="logo">
-                  <h1 className="text-white">Serverless Registry</h1>
+                  <h1 className="text-white">Serverless Devs Registry</h1>
                 </div>
                 <p className="text-gray-400 mt-4">
-                  Serverless Registry 是 Serverless Devs 社区的衍生品，遵循
+                  Serverless Devs Registry 是 Serverless Devs 社区的衍生品，遵循
                   Serverless Devs Model 规范，为打造 Serverless 生态基础，繁荣
                   Serverless 开源生态而努力。正在为成为好用的 Serverless 领域的
                   NPM，Pypi ... 而努力。

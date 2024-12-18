@@ -7,8 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-   title: 'Serverless Registry',
-    description: 'Serverless 包管理平台',
+  title: 'Serverless Devs Registry',
+  description: 'Serverless Devs 包管理平台',
 };
 
 export default function RootLayout({

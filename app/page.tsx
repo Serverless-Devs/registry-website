@@ -115,7 +115,7 @@ const ResourcePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<string>('v3');
-  const [selectedSort, setSelectedSort] = useState<string | null>('time');
+  const [selectedSort, setSelectedSort] = useState<string | null>('download');
   const [openCategories, setOpenCategories] = useState<boolean>(false);
   const [openProviders, setOpenProviders] = useState<boolean>(false);
   const [openVersion, setOpenVersion] = useState<boolean>(false);

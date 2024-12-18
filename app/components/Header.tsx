@@ -80,10 +80,10 @@ const Header = (props: HeaderProps) => {
             <Link href="/" className="nav-link text-white">
               主页
             </Link> */}
-            <span className="text-white">|</span>
+            {/* <span className="text-white">|</span>
             <Link href="/faq" className="nav-link text-white">
               FAQ
-            </Link>
+            </Link> */}
           </div>
 
           {/* Right Section with Buttons */}
