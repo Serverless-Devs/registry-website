@@ -222,7 +222,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
                 border:"none",
               }}
             >
-              下载组件
+              下载
             </button>
             {/* Details button */}
             <button

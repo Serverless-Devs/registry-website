@@ -16,59 +16,52 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Checkbox from "@mui/material/Checkbox";
 import Box from "@mui/material/Box";
-import LoadingPopup from './components/LoadingPopup';
+import LoadingPopup from "./components/LoadingPopup";
 import Button from "@mui/material/Button";
 import { Pagination } from "@mui/material";
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
   },
 });
 
 const v2TypeMap = {
-  '1': 'Component',
-  '2': 'Plugin',
-  '3': 'Application'
-}
-
-const v2CategoryMap = {
-  "云应用": "14",
-  "基础云服务": "15",
-  "Web框架": "16",
-  "全栈应用": "17",
-  "人工智能": "18",
-  "音视频处理": "19",
-  "图文处理": "20",
-  "监控告警": "21",
-  "数据处理": "22",
-  "IoT": "23",
-  "新手入门": "24",
-  "其它": "25",
-  "基础云产品": "27",
-  "函数Connector": "28",
-  "Jamstack": "29",
-  "开源项目": "30",
-  "Higress": "31"
+  "1": "Component",
+  "2": "Plugin",
+  "3": "Application",
 };
 
-const config =
-{
-  "dpr": 0.5,
-  "background": "6483ff",
-  "palette": [
-    "ffffff",
-    "6218FF",
-    "3400FA",
-    "9968FF",
-    "1A79FF"
-  ],
-  "offsets": [1.02, 1.5, 1.05, -0.95, -1.75, 0.27, 0.99, -1.5, 0.95, 0.54],
-  "twist": [2, -0.5, 0.24, 5.7, 0.68, 0.15, 1.5, 1, 0.07, 0.04],
-  "symbolColor": "#6483FF"
-}
+const v2CategoryMap = {
+  云应用: "14",
+  基础云服务: "15",
+  Web框架: "16",
+  全栈应用: "17",
+  人工智能: "18",
+  音视频处理: "19",
+  图文处理: "20",
+  监控告警: "21",
+  数据处理: "22",
+  IoT: "23",
+  新手入门: "24",
+  其它: "25",
+  基础云产品: "27",
+  函数Connector: "28",
+  Jamstack: "29",
+  开源项目: "30",
+  Higress: "31",
+};
+
+const config = {
+  dpr: 0.5,
+  background: "6483ff",
+  palette: ["ffffff", "6218FF", "3400FA", "9968FF", "1A79FF"],
+  offsets: [1.02, 1.5, 1.05, -0.95, -1.75, 0.27, 0.99, -1.5, 0.95, 0.54],
+  twist: [2, -0.5, 0.24, 5.7, 0.68, 0.15, 1.5, 1, 0.07, 0.04],
+  symbolColor: "#6483FF",
+};
 
 interface Params {
   lang?: string;
@@ -114,30 +107,33 @@ const ResourcePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
-  const [selectedVersion, setSelectedVersion] = useState<string>('v3');
-  const [selectedSort, setSelectedSort] = useState<string | null>('download');
+  const [selectedVersion, setSelectedVersion] = useState<string>("v3");
+  const [selectedSort, setSelectedSort] = useState<string | null>("download");
   const [openCategories, setOpenCategories] = useState<boolean>(false);
   const [openProviders, setOpenProviders] = useState<boolean>(false);
   const [openVersion, setOpenVersion] = useState<boolean>(false);
   const [openSort, setOpenSort] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [oldData, setOldData] = useState<Package[]>([]);
-  const [selectedType, setSelectedType] = useState<string>('3');
+  const [selectedType, setSelectedType] = useState<string>("3");
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
   const versions = [
-    { id: 2, name: 'v2' },
-    { id: 3, name: 'v3' },
-  ]
+    { id: 2, name: "v2" },
+    { id: 3, name: "v3" },
+  ];
 
   const sorts = [
-    { id: 'time', name: '按时间排序' },
-    { id: 'download', name: '按下载量排序' },
-    { id: 'relative', name: '按相关度排序' }
-  ]
+    { id: "time", name: "按时间排序" },
+    { id: "download", name: "按下载量排序" },
+    { id: "relative", name: "按相关度排序" },
+  ];
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     setPage(value);
     fetchData(searchQuery, value);
   };
@@ -179,7 +175,7 @@ const ResourcePage: React.FC = () => {
   };
 
   const fetchTotalPages = async (search: string = "") => {
-    if (selectedVersion[1] === '2') return;
+    if (selectedVersion[1] === "2") return;
     const res = await fetchData(search, -1, false);
     try {
       // 向上取整
@@ -207,7 +203,13 @@ const ResourcePage: React.FC = () => {
     setPage(1);
     fetchTotalPages(searchQuery);
     fetchData(searchQuery, 1); // Fetch data whenever a filter changes
-  }, [selectedCategory, selectedProvider, selectedType, selectedSort, selectedVersion]);
+  }, [
+    selectedCategory,
+    selectedProvider,
+    selectedType,
+    selectedSort,
+    selectedVersion,
+  ]);
 
   // useEffect(() => {
   //   const url = new URL(window.location.href);
@@ -224,19 +226,21 @@ const ResourcePage: React.FC = () => {
   //   }
   // }, [window.location.href])
 
-  const fetchData = async (search: string | null = "", page = 1, needSetData = true) => {
+  const fetchData = async (
+    search: string | null = "",
+    page = 1,
+    needSetData = true
+  ) => {
     setLoading(true);
     let url: URL, params: Params;
-    if (selectedVersion[1] === '2') {
-      url = new URL(
-        "https://registry.devsapp.cn/package/search"
-      );
+    if (selectedVersion[1] === "2") {
+      url = new URL("https://registry.devsapp.cn/package/search");
       params = {
         type: v2TypeMap[selectedType as keyof typeof v2TypeMap],
         category: v2CategoryMap[selectedCategory as keyof typeof v2CategoryMap],
         provider: selectedProvider,
         keyword: search,
-        sort: selectedSort === 'relative' ? undefined : selectedSort,
+        sort: selectedSort === "relative" ? undefined : selectedSort,
       };
       // 使用 URLSearchParams 将 params 添加到 URL 查询字符串中
       const searchParams = new URLSearchParams();
@@ -247,7 +251,14 @@ const ResourcePage: React.FC = () => {
       }
       const body = searchParams.toString();
       try {
-        const response = await fetch(url.toString(), { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', lang: "zh" }, body });
+        const response = await fetch(url.toString(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            lang: "zh",
+          },
+          body,
+        });
         const result = await response.json();
         setTotalPages(Math.ceil(result.Response.length / 20));
         if (needSetData) {
@@ -261,9 +272,7 @@ const ResourcePage: React.FC = () => {
         return [];
       }
     } else {
-      url = new URL(
-        "https://api.devsapp.cn/v3/packages/releases"
-      );
+      url = new URL("https://api.devsapp.cn/v3/packages/releases");
       params = {
         lang: "zh",
         type: selectedType,
@@ -272,15 +281,21 @@ const ResourcePage: React.FC = () => {
         page: page,
         platform: selectedVersion[1],
         sort: selectedSort,
-        search
+        search,
       };
       Object.keys(params).forEach((key) => {
-        if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
+        if (
+          params[key] !== null &&
+          params[key] !== undefined &&
+          params[key] !== ""
+        ) {
           url.searchParams.append(key, params[key] as string);
         }
       });
       try {
-        const response = await fetch(url.toString(), { headers: { lang: "zh" } });
+        const response = await fetch(url.toString(), {
+          headers: { lang: "zh" },
+        });
         const result = await response.json();
         if (needSetData) {
           // setOldData([]);
@@ -298,36 +313,36 @@ const ResourcePage: React.FC = () => {
 
   useEffect(() => {
     // return () => {
-      let combinedData: Package[] = [];
-      if (selectedVersion[1] === '2') {
-        combinedData = [
-          // ...data.map((pkg) => ({
-          //   ...pkg,
-          //   source: "new",
-          //   packageName: pkg.name,
-          // })),
-          ...oldData.map((pkg) => ({
-            ...pkg,
-            source: "old",
-            packageName: pkg.package,
-          })),
-        ];
-      } else {
-        combinedData = [
-          ...data.map((pkg) => ({
-            ...pkg,
-            source: "new",
-            packageName: pkg.name,
-          })),
-          // ...oldData.map((pkg) => ({
-          //   ...pkg,
-          //   source: "old",
-          //   packageName: pkg.package,
-          // })),
-        ];
-      }
-      
-      setSortedData(combinedData);
+    let combinedData: Package[] = [];
+    if (selectedVersion[1] === "2") {
+      combinedData = [
+        // ...data.map((pkg) => ({
+        //   ...pkg,
+        //   source: "new",
+        //   packageName: pkg.name,
+        // })),
+        ...oldData.map((pkg) => ({
+          ...pkg,
+          source: "old",
+          packageName: pkg.package,
+        })),
+      ];
+    } else {
+      combinedData = [
+        ...data.map((pkg) => ({
+          ...pkg,
+          source: "new",
+          packageName: pkg.name,
+        })),
+        // ...oldData.map((pkg) => ({
+        //   ...pkg,
+        //   source: "old",
+        //   packageName: pkg.package,
+        // })),
+      ];
+    }
+
+    setSortedData(combinedData);
     // }
   }, [data, oldData]);
 
@@ -368,7 +383,7 @@ const ResourcePage: React.FC = () => {
   const clearFilters = () => {
     setSelectedCategory(null);
     setSelectedProvider(null);
-    setSelectedType('3');
+    setSelectedType("3");
     fetchTotalPages();
     fetchData();
   };
@@ -376,17 +391,17 @@ const ResourcePage: React.FC = () => {
   const handleTypeButtonClick = (type: string) => {
     let typeValue: string | null = null;
     switch (type) {
-      case 'Component':
-        typeValue = '1';
+      case "Component":
+        typeValue = "1";
         break;
-      case 'Plugin':
-        typeValue = '2';
+      case "Plugin":
+        typeValue = "2";
         break;
-      case 'Project':
-        typeValue = '3';
+      case "Project":
+        typeValue = "3";
         break;
       default:
-        typeValue = '3';
+        typeValue = "4";
     }
     setSelectedType(typeValue);
   };
@@ -419,7 +434,14 @@ const ResourcePage: React.FC = () => {
             >
               Serverless Devs 包管理平台
             </h1>
-            <p style={{ fontSize: "1.2rem", opacity: 0.7, color: "#FFFFFF", marginBottom: "30px" }}>
+            <p
+              style={{
+                fontSize: "1.2rem",
+                opacity: 0.7,
+                color: "#FFFFFF",
+                marginBottom: "30px",
+              }}
+            >
               让你像使用手机一样玩转Serverless架构
             </p>
 
@@ -467,17 +489,21 @@ const ResourcePage: React.FC = () => {
           marginBottom: "40px",
         }}
       >
-        {/* <Button
+        <Button
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            backgroundColor: "#252528",
+            background:
+              selectedType === "4"
+                ? "linear-gradient(90deg, #2528f4, #6638ff)"
+                : "#252629",
             border: "1px solid #9497a1",
             borderRadius: "20px",
             padding: "8px 16px",
           }}
+          onClick={() => handleTypeButtonClick("AI_Tools")}
         >
           <div
             style={{
@@ -491,55 +517,80 @@ const ResourcePage: React.FC = () => {
           >
             HOT!
           </div>
-          <img src="/image/AI_button.svg" alt="AI 工具" style={{ width: "24px", marginRight: "8px" }} />
+          <img
+            src="/image/AI_button.svg"
+            alt="AI 工具"
+            style={{ width: "24px", marginRight: "8px" }}
+          />
           AI 工具
-        </Button> */}
+        </Button>
         <Button
-          onClick={() => handleTypeButtonClick('Project')}
+          onClick={() => handleTypeButtonClick("Project")}
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            background: selectedType === '3' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            background:
+              selectedType === "3"
+                ? "linear-gradient(90deg, #2528f4, #6638ff)"
+                : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
           }}
         >
-          <img src="/image/application_icon.svg" alt="应用" style={{ width: "24px", marginRight: "8px" }} />
+          <img
+            src="/image/application_icon.svg"
+            alt="应用"
+            style={{ width: "24px", marginRight: "8px" }}
+          />
           应用
         </Button>
         <Button
-          onClick={() => handleTypeButtonClick('Component')}
+          onClick={() => handleTypeButtonClick("Component")}
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            background: selectedType === '1' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            background:
+              selectedType === "1"
+                ? "linear-gradient(90deg, #2528f4, #6638ff)"
+                : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
           }}
         >
-          <img src="/image/comp_icon.svg" alt="组件" style={{ width: "24px", marginRight: "8px" }} />
+          <img
+            src="/image/comp_icon.svg"
+            alt="组件"
+            style={{ width: "24px", marginRight: "8px" }}
+          />
           组件
         </Button>
         <Button
-          onClick={() => handleTypeButtonClick('Plugin')}
+          onClick={() => handleTypeButtonClick("Plugin")}
           style={{
             margin: "0 10px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
-            background: selectedType === '2' ? "linear-gradient(90deg, #2528f4, #6638ff)" : "#252629",
+            background:
+              selectedType === "2"
+                ? "linear-gradient(90deg, #2528f4, #6638ff)"
+                : "#252629",
             border: "1px solid #73757d",
             borderRadius: "20px",
             padding: "8px 16px",
           }}
         >
-          <img src="/image/plug_icon.svg" alt="插件" style={{ width: "24px", marginRight: "8px" }} />
+          <img
+            src="/image/plug_icon.svg"
+            alt="插件"
+            style={{ width: "24px", marginRight: "8px" }}
+          />
           插件
         </Button>
       </div>
@@ -813,52 +864,66 @@ const ResourcePage: React.FC = () => {
           </Box>
 
           {/* Content Grid */}
-          <div className="w-full md:w-7/12 lg:w-9/12">
-            <div
-              className="grid"
-              style={{
-                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                gap: "30px",
-              }}
-            >
-              {sortedData.map((item, index) =>
-                item.source === "new" ? (
-                  <CardItem
-                    key={index}
-                    item={{
-                      name: item.name || "Unknown Name",
-                      type: item.type || "Unknown Type",
-                      download: item.download || 0,
-                      latest_create: item.latest_create || "",
-                      description: item.description,
-                      zipball_url: item.zipball_url,
-                    }}
-                  />
-                ) : (
-                  <OldCardItem
-                    key={index}
-                    item={{
-                      oldType: Number(item.type) || 0,
-                      package: item.package || "Unknown Package",
-                      download: item.download || 0,
-                      version: item.version || { created_at: "" },
-                      description: item.description,
-                      // zipball_url: item.zipball_url,
-                    }}
-                  />
-                )
-              )}
+          {selectedType !== "4" ? (
+            <div className="w-full md:w-7/12 lg:w-9/12">
+              <div
+                className="grid"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                  gap: "30px",
+                }}
+              >
+                {sortedData.map((item, index) =>
+                  item.source === "new" ? (
+                    <CardItem
+                      key={index}
+                      item={{
+                        name: item.name || "Unknown Name",
+                        type: item.type || "Unknown Type",
+                        download: item.download || 0,
+                        latest_create: item.latest_create || "",
+                        description: item.description,
+                        zipball_url: item.zipball_url,
+                      }}
+                    />
+                  ) : (
+                    <OldCardItem
+                      key={index}
+                      item={{
+                        oldType: Number(item.type) || 0,
+                        package: item.package || "Unknown Package",
+                        download: item.download || 0,
+                        version: item.version || { created_at: "" },
+                        description: item.description,
+                        // zipball_url: item.zipball_url,
+                      }}
+                    />
+                  )
+                )}
+              </div>
+              <ThemeProvider theme={darkTheme}>
+                <Pagination
+                  count={totalPages}
+                  size="large"
+                  page={page}
+                  onChange={handlePageChange}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "20px",
+                  }}
+                />
+              </ThemeProvider>
             </div>
-            <ThemeProvider theme={darkTheme}>
-              <Pagination count={totalPages} size="large" page={page} onChange={handlePageChange} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }} />
-            </ThemeProvider>
-          </div>
+          ) : (
+            <div>
+              <span className="text-xl text-white">敬请期待</span>
+            </div>
+          )}
         </div>
       </section>
       <Footer />
     </div>
-
-
   );
 };
 

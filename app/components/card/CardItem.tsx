@@ -221,7 +221,7 @@ export default function CardItem({ item }: CardItemProps) {
                 border:"none",
               }}
             >
-              下载组件
+              下载
             </button>
             {/* Details button */}
             <button
