@@ -643,17 +643,17 @@ const ResourcePage: React.FC = () => {
               </Button>
             </div>
 
-            {/* version section */}
-            <ListItemButton onClick={toggleVersion}>
+            {/* Categories Section */}
+            <ListItemButton onClick={toggleCategories}>
               <ListItemIcon>
-                {openVersion ? (
+                {openCategories ? (
                   <ExpandLess sx={{ color: "#FFFFFF" }} />
                 ) : (
                   <ExpandMore sx={{ color: "#FFFFFF" }} />
                 )}
               </ListItemIcon>
               <ListItemText
-                primary="版本"
+                primary="分类"
                 primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
               />
               <div
@@ -668,20 +668,20 @@ const ResourcePage: React.FC = () => {
                   color: "#FFFFFF",
                 }}
               >
-                {selectedVersion ? 1 : 0}
+                {selectedCategory ? 1 : 0}
               </div>
             </ListItemButton>
-            <Collapse in={openVersion} timeout="auto" unmountOnExit>
+            <Collapse in={openCategories} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                {versions.map((version) => (
+                {categories.map((category) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
-                    key={version.id}
-                    onClick={() => handleVersionClick(version.name)}
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.name)}
                   >
                     <Checkbox
-                      checked={selectedVersion === version.name}
-                      onChange={() => handleVersionClick(version.name)}
+                      checked={selectedCategory === category.name}
+                      onChange={() => handleCategoryClick(category.name)}
                       sx={{
                         color: "#FFFFFF",
                         "&.Mui-checked": {
@@ -690,7 +690,7 @@ const ResourcePage: React.FC = () => {
                       }}
                     />
                     <ListItemText
-                      primary={version.name}
+                      primary={category.name}
                       primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
                     />
                   </ListItemButton>
@@ -752,61 +752,6 @@ const ResourcePage: React.FC = () => {
               </List>
             </Collapse>
 
-            {/* Categories Section */}
-            <ListItemButton onClick={toggleCategories}>
-              <ListItemIcon>
-                {openCategories ? (
-                  <ExpandLess sx={{ color: "#FFFFFF" }} />
-                ) : (
-                  <ExpandMore sx={{ color: "#FFFFFF" }} />
-                )}
-              </ListItemIcon>
-              <ListItemText
-                primary="分类"
-                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
-              />
-              <div
-                style={{
-                  width: "35px",
-                  height: "25px",
-                  backgroundColor: "#4f4f4f",
-                  borderRadius: "20px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: "#FFFFFF",
-                }}
-              >
-                {selectedCategory ? 1 : 0}
-              </div>
-            </ListItemButton>
-            <Collapse in={openCategories} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {categories.map((category) => (
-                  <ListItemButton
-                    sx={{ pl: 4 }}
-                    key={category.id}
-                    onClick={() => handleCategoryClick(category.name)}
-                  >
-                    <Checkbox
-                      checked={selectedCategory === category.name}
-                      onChange={() => handleCategoryClick(category.name)}
-                      sx={{
-                        color: "#FFFFFF",
-                        "&.Mui-checked": {
-                          color: "#FFFFFF",
-                        },
-                      }}
-                    />
-                    <ListItemText
-                      primary={category.name}
-                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
-                    />
-                  </ListItemButton>
-                ))}
-              </List>
-            </Collapse>
-
             {/* Providers Section */}
             <ListItemButton onClick={toggleProviders}>
               <ListItemIcon>
@@ -861,6 +806,61 @@ const ResourcePage: React.FC = () => {
                 ))}
               </List>
             </Collapse>
+
+            {/* version section */}
+            <ListItemButton onClick={toggleVersion}>
+              <ListItemIcon>
+                {openVersion ? (
+                  <ExpandLess sx={{ color: "#FFFFFF" }} />
+                ) : (
+                  <ExpandMore sx={{ color: "#FFFFFF" }} />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary="版本"
+                primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+              />
+              <div
+                style={{
+                  width: "35px",
+                  height: "25px",
+                  backgroundColor: "#4f4f4f",
+                  borderRadius: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                }}
+              >
+                {selectedVersion ? 1 : 0}
+              </div>
+            </ListItemButton>
+            <Collapse in={openVersion} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {versions.map((version) => (
+                  <ListItemButton
+                    sx={{ pl: 4 }}
+                    key={version.id}
+                    onClick={() => handleVersionClick(version.name)}
+                  >
+                    <Checkbox
+                      checked={selectedVersion === version.name}
+                      onChange={() => handleVersionClick(version.name)}
+                      sx={{
+                        color: "#FFFFFF",
+                        "&.Mui-checked": {
+                          color: "#FFFFFF",
+                        },
+                      }}
+                    />
+                    <ListItemText
+                      primary={version.name}
+                      primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
           </Box>
 
           {/* Content Grid */}
@@ -873,7 +873,7 @@ const ResourcePage: React.FC = () => {
                   gap: "30px",
                 }}
               >
-                {sortedData.map((item, index) =>
+                {sortedData.length > 0 ? sortedData.map((item, index) =>
                   item.source === "new" ? (
                     <CardItem
                       key={index}
@@ -899,7 +899,7 @@ const ResourcePage: React.FC = () => {
                       }}
                     />
                   )
-                )}
+                ) : <span className="text-white">暂无数据</span>}
               </div>
               <ThemeProvider theme={darkTheme}>
                 <Pagination
