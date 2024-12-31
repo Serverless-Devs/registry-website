@@ -717,10 +717,10 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
                     发布于 {formatDateWithHyphen(packageDetail?.created_at || packageDetail?.create || "")}
                   </span>
                 </div>
-                <div className="flex items-center space-x-2 text-opacity-70 text-[#F4F4F6]">
+                {/* <div className="flex items-center space-x-2 text-opacity-70 text-[#F4F4F6]">
                   <span>免责声明</span>
                   <span>隐私声明</span>
-                </div>
+                </div> */}
               </div>
             }
           />

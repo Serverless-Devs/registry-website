@@ -61,7 +61,7 @@ const Header = (props: HeaderProps) => {
           {/* Left Section with Logo */}
           <div className="header-left">
             <img
-              src="../image/logo.svg"
+              src="/image/logo.svg"
               alt="Serverless Registry Logo"
               className="w-30 h-auto"
             />
