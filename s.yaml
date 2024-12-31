@@ -31,6 +31,7 @@ resources:
       memorySize: 2048
       diskSize: 512
       instanceConcurrency: 200
+      logConfig: auto
       layers:
         - acs:fc:${vars.region}:official:layers/Nodejs20/versions/1
         # - acs:fc:${vars.region}:1154600634854327:layers/registry-website-next-dependences/versions/2
