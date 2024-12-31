@@ -1,0 +1,32 @@
+name: Next.js Deploy on FC
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - nextjs
+
+jobs:
+  deploy:
+    if: github.repository == 'Serverless-Devs/registry-website'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 20
+      - name: npm install
+        run: npm install
+      - name: build
+        run: npm run build
+      - name: Install s
+        run: npm i @serverless-devs/s -g
+      - run: s config add --AccessKeyID ${{secrets.DEPLOY_AK}}  --AccessKeySecret ${{secrets.DEPLOY_SK}} -a default -f 
+      - run: rm -rf .git
+      - run: rm -rf .github
+      - name: Deploy on FC
+        run: s deploy -y
+      - run: s info
+

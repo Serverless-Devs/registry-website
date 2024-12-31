@@ -5,9 +5,9 @@
 
 edition: 3.0.0
 name: start-next-app
-access: "agentcraft"
+access: "default"
 vars:
-  region: "cn-hangzhou"
+  region: "ap-northeast-1"
   functionName: "registry-website"
 resources:
   start_next:
@@ -33,7 +33,7 @@ resources:
       instanceConcurrency: 100
       layers:
         - acs:fc:${vars.region}:official:layers/Nodejs20/versions/1
-        - acs:fc:${vars.region}:1154600634854327:layers/registry-website-next-dependences/versions/2
+        # - acs:fc:${vars.region}:1154600634854327:layers/registry-website-next-dependences/versions/2
       environmentVariables:
         PATH: >-
           /opt/nodejs20/bin:/usr/local/bin/apache-maven/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ruby/bin
