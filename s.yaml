@@ -30,7 +30,7 @@ resources:
       cpu: 1
       memorySize: 2048
       diskSize: 512
-      instanceConcurrency: 100
+      instanceConcurrency: 200
       layers:
         - acs:fc:${vars.region}:official:layers/Nodejs20/versions/1
         # - acs:fc:${vars.region}:1154600634854327:layers/registry-website-next-dependences/versions/2
@@ -55,13 +55,13 @@ resources:
               - PUT
               - DELETE
             authType: anonymous
-  fc3_domain_0:
-    component: fc3-domain
-    props:
-      region: ${vars.region}
-      domainName: auto
-      protocol: HTTP
-      routeConfig:
-        routes:
-          - path: /*
-            functionName: ${vars.functionName}
+  # fc3_domain_0:
+  #   component: fc3-domain
+  #   props:
+  #     region: ${vars.region}
+  #     domainName: auto
+  #     protocol: HTTP
+  #     routeConfig:
+  #       routes:
+  #         - path: /*
+  #           functionName: ${vars.functionName}
