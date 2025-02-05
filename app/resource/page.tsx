@@ -459,7 +459,9 @@ const ResourcePage: React.FC = () => {
         className="main-content-section"
         style={{ backgroundColor: "transparent" }}
       >
-        <div className="container mx-auto flex flex-wrap py-12">
+        <div className="container mx-auto flex flex-wrap py-12" style={{
+          paddingBottom: '160px'
+        }}>
           <Box
             sx={{
               width: "100%",
@@ -479,7 +481,7 @@ const ResourcePage: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <p style={{ color: "#f2f2f5", fontSize: "20px" }}>过滤器</p>
+              <p style={{ color: "#f2f2f5", fontSize: "20px", paddingLeft: '16px' }}>过滤器</p>
               <Button
                 onClick={clearFilters}
                 style={{
@@ -559,7 +561,9 @@ const ResourcePage: React.FC = () => {
             </Collapse>
 
             {/* Categories Section */}
-            <ListItemButton onClick={toggleCategories}>
+            <ListItemButton onClick={toggleCategories}
+       
+            >
               <ListItemIcon>
                 {openCategories ? (
                   <ExpandLess sx={{ color: "#FFFFFF" }} />
@@ -707,7 +711,7 @@ const ResourcePage: React.FC = () => {
               )}
             </div>
             <ThemeProvider theme={darkTheme}>
-              <Pagination count={totalPages} size="large" page={page} onChange={handlePageChange} style={{ display: "flex", justifyContent: "center", marginTop: "20px" }} />
+              <Pagination count={totalPages} size="large" page={page} onChange={handlePageChange} style={{ display: "flex", justifyContent: "center", marginTop: "78px" }} />
             </ThemeProvider>
           </div>
         </div>

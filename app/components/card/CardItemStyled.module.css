@@ -1,0 +1,43 @@
+/*CardItemStyled 组件的样式文件*/
+
+.download{
+    background-color: #2e3037;
+    color: #c1c2c8;
+    font-size: 14px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 24px;
+    height: 40px;
+    border: none;
+}
+
+
+.download:hover{
+    background: linear-gradient(73deg, rgb(38, 44, 244) 10%, rgb(113, 64, 255) 87%);
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    opacity: 1;
+}
+
+
+.detail-button{
+    background-color: #1d1e23;
+    color: #c1c2c8;
+    font-size: 14px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    margin-left: 12px;
+    border-radius: 24px;
+    border-color: #6a6c74;
+    border-width: 1px;
+    height: 40px;
+}
+
+
+.detail-button:hover{
+    background: linear-gradient(73deg, rgb(38, 44, 244) 10%, rgb(113, 64, 255) 87%);
+    border-color: linear-gradient(73deg, rgb(38, 44, 244) 10%, rgb(113, 64, 255) 87%);
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    opacity: 1;
+}

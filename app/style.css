@@ -2321,6 +2321,8 @@ div#preloader .loader-cubes .loader-cube .loader-cube3::before {
   /* background: #fff; */
    background: -webkit-gradient(linear, left top, right top, from( #2a32fc), to(#7e56ff));
   background: linear-gradient(left, #2a32fc 0%, #7e56ff 100%);
+  
+  height: 72px;
 }
 
 .header-two.sticky-header.sticky-on .header-navigation {

@@ -300,7 +300,7 @@ const stickyDivStyle = {
   position: "fixed",
   top: "20px", // 根据需要调整
   left: "20px", // 根据需要调整
-  width: "20%",
+  // width: "20%",
   backgroundColor: "transparent", // 根据需要调整
   color: "white",
   // padding: "10px", // 根据需要调整
@@ -334,12 +334,26 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
     );
   };
 
+  // 监听滚动事件: 通过js代码控制左侧区域，当滚动到距离底部为400px时，图钉效果将被取消
   useEffect(() => {
     const handleScroll = () => {
       const section = document.querySelector(".breadcrumb-area");
+      // if (section) {
+      //   const rect = section.getBoundingClientRect();
+      //   setIsSticky(rect.bottom < 0);
+      // }
+
       if (section) {
-        const rect = section.getBoundingClientRect();
-        setIsSticky(rect.bottom < 0);
+        const scrollPosition = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const distanceFromBottom = documentHeight - (scrollPosition + windowHeight);
+        if (distanceFromBottom < 400) {// 当页面滚动到距离底部400px时，图钉效果将被取消。
+          setIsSticky(false);
+        } else {
+          const rect = section.getBoundingClientRect();
+          setIsSticky(rect.bottom < 0);
+        }
       }
     };
 
@@ -657,25 +671,28 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
   return (
     <div className="bg-black">
       <Header />
+      {/* Left: 左侧浮动内容 */}
       <section className="breadcrumb-area">
         <div className="container">
           <div className="content">
-            <div className="flex justify-evenly items-center">
+            {/* <div className="flex justify-evenly items-center"> */}
+            <div className="md:flex justify-between items-center">
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  gap: '16px'
                 }}
               >
                 <div>
                   <img
                     src="/image/application_icon.svg"
                     alt="应用"
-                    style={{ width: "155px", marginRight: "20px" }}
+                    style={{ width: "120px", height: "120px", color: '#959CFF' , border: '0.8px solid #FFFFFF', borderRadius: '8px'}}
                   />
                 </div>
-                <div>
-                  <h2 className="breadd wow fadeInUp text-[62px]">
+                <div className="ml-[20px]">
+                  <h2 className="breadd wow fadeInUp text-[60px]">
                     {packageDetail?.name}
                   </h2>
                   <div className="flex items-center space-x-2 text-white">
@@ -683,8 +700,8 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
                     <div style={authorIconStyle}>
                       <div style={authorFontStyle}>devs</div>
                     </div>
-                    <span className=" text-opacity-70 text-[#F4F4F6]">
-                      发布于{" "}
+                    <span className=" text-opacity-70 text-[#F4F4F6] text-[12px]" style={{margin: 0}}>
+                      发布于
                       {formatDateWithHyphen(packageDetail?.created_at || packageDetail?.create || "")}
                     </span>
                   </div>
@@ -695,8 +712,9 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
           </div>
         </div>
       </section>
+      {/* Right: 右侧主体内容 */}
       {isSticky && (
-        <Card style={stickyDivStyle as any}>
+        <Card style={stickyDivStyle as any} className="card-sticky md:block sm:hidden ">
           <CardHeader
             title={<span className="text-[24px]">{packageDetail?.name}</span>}
             avatar={
@@ -730,20 +748,26 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
         </Card>
       )}
 
+
+
       <div
-        className={`container ${
-          isSticky ? "!ml-auto !mr-10" : ""
-        } w-[80%] p-4 mx-6`}
+        className={` ${
+          isSticky ? "!ml-auto !mr-10 p-4 mx-6 " : "container  p-4 mx-6"
+        } w-[80%] hidden md:block md:w-3/4  md:!ml-auto sm:hidden
+        `}
       >
         <div className="flex">
-          <div className="p-4 ml-10 w-full">
-            <div className="mb-4 p-4">
+          {/* <div className="p-4 ml-10 w-full"> */}
+          <div className={`${isSticky ? "w-full flex-1 md:ml-[140px]" : "w-full"}`} style={{
+            padding: 0,
+          }}>
+            <div className={`${isSticky ? "mb-4 p-4" : ""}`}>
               <h2 className="text-white mb-6">描述</h2>
               <p className="text-[#F4F4F6] text-opacity-70 mb-6">
                 {packageDetail?.description}
               </p>
             </div>
-            <div className="mb-4 p-4">
+            <div className={`${isSticky ? "mb-4 p-4" : ""}`}>
               <h2 className="text-white mb-6">帮助文档</h2>
               <div
                 className="markdown-body"
@@ -753,7 +777,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
               ></div>
               {/* <p className="text-[#F4F4F6] text-opacity-70 mb-6">{}</p> */}
             </div>
-            <div className="mb-4 p-4">
+            <div className={`${isSticky ? "mb-4 p-4" : "py-4"}`}>
               <h2 className="text-white mb-6">版本记录</h2>
               <Table className="rounded-[16px] bg-[#1E1F24]">
                 <TableHead>
@@ -829,3 +853,4 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
 };
 
 export default PackageDetailPage;
+

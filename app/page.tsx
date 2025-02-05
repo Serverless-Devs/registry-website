@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import React, { useEffect, useState, useLayoutEffect, useMemo } from "react";
 // import { useSearchParams } from "next/navigation";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import CardItem from "./components/card/CardItem";
 import OldCardItem from "./components/card/CardItemOld";
+import CardItemStyled from "./components/card/CardItemStyled";
 
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -138,6 +139,16 @@ const ResourcePage: React.FC = () => {
     fetchData(searchQuery, value);
   };
 
+  // 确定Icon间距
+  const listIconStyles = useMemo(()=>{
+    return {minWidth: '10px', marginRight: '8px'};
+  }, [])
+
+  // 确定List间距
+  const listContainerStyles = useMemo(()=>{
+    return {backgroundColor: "#202126", borderRadius: "8px"};
+  }, [])
+  
   // const searchParams = useSearchParams();
 
   const fetchCategories = async () => {
@@ -361,7 +372,12 @@ const ResourcePage: React.FC = () => {
   };
 
   const handleSortClick = (sort: string) => {
-    setSelectedSort(sort);
+    // 支持取消选择
+    const newSort = selectedSort === sort ? null : sort;
+    setSelectedSort(newSort);
+
+    // 不支持取消选择
+    // setSelectedSort(sort);
   };
 
   const toggleVersion = () => {
@@ -458,20 +474,22 @@ const ResourcePage: React.FC = () => {
                     setPage(1);
                   }
                 }}
-                className="w-full p-3 pl-4 pr-12 border border-white rounded-md bg-opacity-25 text-white placeholder-white"
+                className="w-full border border-white rounded-md bg-opacity-25 text-white placeholder-white"
                 style={{
                   background: "rgba(255, 255, 255, 0.1)",
-                  borderRadius: "20px",
+                  borderRadius: "32px",
                   height: "45px",
-                  borderColor: "#b4b6c0",
+                  borderColor: "#b3b6c1",
                   color: "#adb4f5",
+                  padding: "16px 24px",
+
                 }}
               />
               <span className="absolute inset-y-0 right-4 flex items-center">
                 <img
                   src="/image/search.svg"
                   alt="Search Icon"
-                  className="w-5 h-5"
+                  className="w-[12pt] h-[12pt]"
                 />
               </span>
             </div>
@@ -485,13 +503,15 @@ const ResourcePage: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "20px",
-          marginBottom: "40px",
+          marginTop: "40px",
+          marginBottom: "50px",
+          border: 'transparent',
+          height: '40px'
         }}
       >
         <Button
           style={{
-            margin: "0 10px",
+            margin: "0 8px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
@@ -499,8 +519,8 @@ const ResourcePage: React.FC = () => {
               selectedType === "4"
                 ? "linear-gradient(90deg, #2528f4, #6638ff)"
                 : "#252629",
-            border: "1px solid #9497a1",
-            borderRadius: "20px",
+            border: "1px solid #b3b6c1",
+            borderRadius: "32px",
             padding: "8px 16px",
           }}
           onClick={() => handleTypeButtonClick("AI_Tools")}
@@ -508,11 +528,13 @@ const ResourcePage: React.FC = () => {
           <div
             style={{
               background: "linear-gradient(90deg, #2227f2, #6638ff)",
-              borderRadius: "20px",
-              padding: "2px 8px",
+              borderRadius: "32px",
+              borderColor: "#b3b6c1",
+              padding: "2px 12px",
               marginRight: "8px",
               color: "#FFFFFF",
-              fontWeight: "bold",
+              fontWeight: "400",
+              fontSize: "12px",
             }}
           >
             HOT!
@@ -520,14 +542,14 @@ const ResourcePage: React.FC = () => {
           <img
             src="/image/AI_button.svg"
             alt="AI 工具"
-            style={{ width: "24px", marginRight: "8px" }}
+            style={{ width: "18px", height: "18px", marginRight: "8px", fontSize: "12px", }}
           />
           AI 工具
         </Button>
         <Button
           onClick={() => handleTypeButtonClick("Project")}
           style={{
-            margin: "0 10px",
+            margin: "0 8px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
@@ -535,22 +557,23 @@ const ResourcePage: React.FC = () => {
               selectedType === "3"
                 ? "linear-gradient(90deg, #2528f4, #6638ff)"
                 : "#252629",
-            border: "1px solid #73757d",
-            borderRadius: "20px",
+            border: "1px solid #b3b6c1",
+            borderRadius: "32px",
             padding: "8px 16px",
+            fontSize: "12px",
           }}
         >
           <img
             src="/image/application_icon.svg"
             alt="应用"
-            style={{ width: "24px", marginRight: "8px" }}
+            style={{ width: "18px", height: "18px", marginRight: "8px" }}
           />
           应用
         </Button>
         <Button
           onClick={() => handleTypeButtonClick("Component")}
           style={{
-            margin: "0 10px",
+            margin: "0 8px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
@@ -558,22 +581,23 @@ const ResourcePage: React.FC = () => {
               selectedType === "1"
                 ? "linear-gradient(90deg, #2528f4, #6638ff)"
                 : "#252629",
-            border: "1px solid #73757d",
-            borderRadius: "20px",
+            border: "1px solid #b3b6c1",
+            borderRadius: "32px",
             padding: "8px 16px",
+            fontSize: "12px",
           }}
         >
           <img
             src="/image/comp_icon.svg"
             alt="组件"
-            style={{ width: "24px", marginRight: "8px" }}
+            style={{ width: "18px", height: "18px", marginRight: "8px" }}
           />
           组件
         </Button>
         <Button
           onClick={() => handleTypeButtonClick("Plugin")}
           style={{
-            margin: "0 10px",
+            margin: "0 8px",
             color: "#FFFFFF",
             display: "flex",
             alignItems: "center",
@@ -581,15 +605,16 @@ const ResourcePage: React.FC = () => {
               selectedType === "2"
                 ? "linear-gradient(90deg, #2528f4, #6638ff)"
                 : "#252629",
-            border: "1px solid #73757d",
-            borderRadius: "20px",
+            border: "1px solid #b3b6c1",
+            borderRadius: "32px",
             padding: "8px 16px",
+            fontSize: "12px",
           }}
         >
           <img
             src="/image/plug_icon.svg"
             alt="插件"
-            style={{ width: "24px", marginRight: "8px" }}
+            style={{ width: "18px", height: "18px", marginRight: "8px" }}
           />
           插件
         </Button>
@@ -599,7 +624,9 @@ const ResourcePage: React.FC = () => {
         className="main-content-section"
         style={{ backgroundColor: "transparent" }}
       >
-        <div className="container mx-auto flex flex-wrap py-12">
+        <div className="container mx-auto flex flex-wrap py-12" style={{
+          paddingBottom: '160px'
+        }}>
           <Box
             sx={{
               width: "100%",
@@ -607,9 +634,13 @@ const ResourcePage: React.FC = () => {
               bgcolor: "transparent",
               overflowY: "auto",
               maxHeight: 600,
-              marginRight: 5,
+              marginRight: '16px',
             }}
             component="nav"
+            style={{
+              width: "146pt",
+              padding: '0px 4px'
+            }}
             aria-labelledby="nested-list-subheader"
           >
             <div
@@ -619,14 +650,15 @@ const ResourcePage: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <p style={{ color: "#f2f2f5", fontSize: "20px" }}>过滤器</p>
+              <div style={{ color: "#f2f2f5", fontSize: "20px",  paddingLeft: '16px'  }}>过滤器</div>
               <Button
                 onClick={clearFilters}
                 style={{
+                  display: "none",
                   color: "#aaadb9",
                   backgroundColor: "#1b1c1e",
                   border: "1px solid #FFFFFF",
-                  display: "flex",
+                  // display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   padding: "5px 15px",
@@ -644,8 +676,8 @@ const ResourcePage: React.FC = () => {
             </div>
 
             {/* Categories Section */}
-            <ListItemButton onClick={toggleCategories}>
-              <ListItemIcon>
+            <ListItemButton onClick={toggleCategories} >
+              <ListItemIcon sx={listIconStyles}>
                 {openCategories ? (
                   <ExpandLess sx={{ color: "#FFFFFF" }} />
                 ) : (
@@ -672,12 +704,13 @@ const ResourcePage: React.FC = () => {
               </div>
             </ListItemButton>
             <Collapse in={openCategories} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
+              <List component="div" disablePadding dense sx={listContainerStyles}>
                 {categories.map((category) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
                     key={category.id}
                     onClick={() => handleCategoryClick(category.name)}
+                    className="hover:bg-[#2E3038] hover:text-[#F4F4F6]"
                   >
                     <Checkbox
                       checked={selectedCategory === category.name}
@@ -693,13 +726,12 @@ const ResourcePage: React.FC = () => {
                       primary={category.name}
                       primaryTypographyProps={{ style: { color: "#FFFFFF" } }}
                     />
-                  </ListItemButton>
-                ))}
+                  </ListItemButton>))}
               </List>
             </Collapse>
 
             <ListItemButton onClick={toggleSort}>
-              <ListItemIcon>
+              <ListItemIcon sx={listIconStyles}>
                 {openVersion ? (
                   <ExpandLess sx={{ color: "#FFFFFF" }} />
                 ) : (
@@ -726,12 +758,13 @@ const ResourcePage: React.FC = () => {
               </div>
             </ListItemButton>
             <Collapse in={openSort} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
+              <List component="div" disablePadding dense sx={listContainerStyles}>
                 {sorts.map((sort) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
                     key={sort.id}
                     onClick={() => handleSortClick(sort.id)}
+                    className="hover:bg-[#2E3038] hover:text-[#F4F4F6]"
                   >
                     <Checkbox
                       checked={selectedSort === sort.id}
@@ -754,7 +787,7 @@ const ResourcePage: React.FC = () => {
 
             {/* Providers Section */}
             <ListItemButton onClick={toggleProviders}>
-              <ListItemIcon>
+              <ListItemIcon sx={listIconStyles}>
                 {openProviders ? (
                   <ExpandLess sx={{ color: "#FFFFFF" }} />
                 ) : (
@@ -781,12 +814,13 @@ const ResourcePage: React.FC = () => {
               </div>
             </ListItemButton>
             <Collapse in={openProviders} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
+              <List component="div" disablePadding dense sx={listContainerStyles}>
                 {providers.map((provider) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
                     key={provider.id}
                     onClick={() => handleProviderClick(provider.name)}
+                    className="hover:bg-[#2E3038] hover:text-[#F4F4F6]"
                   >
                     <Checkbox
                       checked={selectedProvider === provider.name}
@@ -809,7 +843,7 @@ const ResourcePage: React.FC = () => {
 
             {/* version section */}
             <ListItemButton onClick={toggleVersion}>
-              <ListItemIcon>
+              <ListItemIcon sx={listIconStyles}>
                 {openVersion ? (
                   <ExpandLess sx={{ color: "#FFFFFF" }} />
                 ) : (
@@ -836,12 +870,13 @@ const ResourcePage: React.FC = () => {
               </div>
             </ListItemButton>
             <Collapse in={openVersion} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
+              <List component="div" disablePadding dense sx={listContainerStyles}>
                 {versions.map((version) => (
                   <ListItemButton
                     sx={{ pl: 4 }}
                     key={version.id}
                     onClick={() => handleVersionClick(version.name)}
+                    className="hover:bg-[#2E3038] hover:text-[#F4F4F6]"
                   >
                     <Checkbox
                       checked={selectedVersion === version.name}
@@ -869,13 +904,19 @@ const ResourcePage: React.FC = () => {
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                  gap: "30px",
+                  // 因为保证box宽度为328px
+                  // 每列宽度328px
+                  gridTemplateColumns: "repeat(auto-fill, 328px)",
+                  // gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                  gap: "16px",
                 }}
               >
                 {sortedData.length > 0 ? sortedData.map((item, index) =>
                   item.source === "new" ? (
-                    <CardItem
+                    <CardItemStyled
+                      maxWidth='unset'
+                      // height="296px"
+                      padding="24px 24px 20px"
                       key={index}
                       item={{
                         name: item.name || "Unknown Name",
@@ -910,7 +951,7 @@ const ResourcePage: React.FC = () => {
                   style={{
                     display: "flex",
                     justifyContent: "center",
-                    marginTop: "20px",
+                    marginTop: "78px",
                   }}
                 />
               </ThemeProvider>
@@ -923,6 +964,7 @@ const ResourcePage: React.FC = () => {
         </div>
       </section>
       <Footer />
+
     </div>
   );
 };
