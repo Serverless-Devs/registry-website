@@ -32,7 +32,7 @@ export const tooltipContent = (packageDetail: PackageDetails | null) => {
     const markdown = `\`\`\`bash\ns init ${packageDetail?.name}\n \`\`\` `;
     return (
       <div className="m-2 text-left">
-        <div className="mb-2 text-sm text-white">使用 <Link href="https://docs.serverless-devs.com/getting-started/" color="primary" underline="always">S工具</Link> 下载到本地</div>
+        <div className="mb-2 text-sm text-white">使用 <Link href="https://docs.serverless-devs.com/getting-started/" color="primary">S工具</Link> 下载到本地</div>
         <div
           className="markdown-body"
           dangerouslySetInnerHTML={{ __html: md.render(markdown) }}
