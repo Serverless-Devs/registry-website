@@ -112,10 +112,8 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
   const [packageHistory, setPackageHistory] = useState<PackageHistoryItem[]>([]);
   const [notFound, setNotFound] = useState<boolean>(false);
   const [pkgInfo, setPkgInfo] = useState<any>({});
-  const [open, setOpen] = React.useState(false);
-  const [openSmall, setOpenSmall] = React.useState(false);
   const [isSticky, setIsSticky] = useState(false);
-
+  
   const isSmallScreen = useMediaQuery('(max-width: 1280px)'); 
 
   // 监听滚动事件: 通过js代码控制左侧区域，当滚动到距离底部为400px时，图钉效果将被取消
@@ -190,22 +188,6 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
     
   }, [isSmallScreen]);
 
-  const handleTooltipClose = () => {
-    setOpen(false);
-  };
-
-  const handleTooltipOpen = () => {
-    setOpen(true);
-  };
-
-  const handleTooltipSmallClose = () => {
-    setOpenSmall(false);
-  };
-
-  const handleTooltipSmallOpen = () => {
-    setOpenSmall(true);
-  };
-
   // 通过优化代码，统一成使用一块代码
   // 滚动时候，改为纵向布局
   // 缩放，变为横排，自由流动
@@ -257,9 +239,6 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
               packageDetail={packageDetail}
               packageHistory={packageHistory}
               pkgInfo={pkgInfo}
-              open={open}
-              handleTooltipOpen={handleTooltipOpen}
-              handleTooltipClose={handleTooltipClose}
             />
           </div>
 
@@ -268,9 +247,6 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
               packageDetail={packageDetail}
               packageHistory={packageHistory}
               pkgInfo={pkgInfo}
-              openSmall={openSmall}
-              handleTooltipSmallOpen={handleTooltipSmallOpen}
-              handleTooltipSmallClose={handleTooltipSmallClose}
             />
           </div>
 

@@ -121,7 +121,17 @@ const stickyDivStyle = {
 };
 
 // 外部引入的组件名称为： PackageInfoComponent
-const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pkgInfo, open, handleTooltipOpen, handleTooltipClose }: any) => {
+const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pkgInfo }: any) => {
+  const [open, setOpen] = React.useState(false);
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
+
+
     return <section className="breadcrumb-area">
       <div className="container">
         <div className="content">

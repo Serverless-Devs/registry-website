@@ -123,7 +123,18 @@ const stickyDivStyle = {
 };
 
 // 外部引入的组件名称为： PackageInfoComponentSmall
-const PackageInfoComponentSmall: React.FC<any>  = ({ packageDetail, packageHistory, pkgInfo, openSmall, handleTooltipSmallOpen, handleTooltipSmallClose }: any) => {
+const PackageInfoComponentSmall: React.FC<any>  = ({ packageDetail, packageHistory, pkgInfo}: any) => {
+  const [openSmall, setOpenSmall] = React.useState(false);
+
+  const handleTooltipSmallClose = () => {
+    setOpenSmall(false);
+  };
+
+  const handleTooltipSmallOpen = () => {
+    setOpenSmall(true);
+  };
+
+
   return <section className="breadcrumb-area" style={{ height: '100%' }}>
     <div className="container" style={{ position: 'sticky', top: 0 }}>
       <div className="content" style={{ padding: '20px 0px 40px' }}>
@@ -209,6 +220,7 @@ const PackageInfoComponentSmall: React.FC<any>  = ({ packageDetail, packageHisto
             <div className="!w-full">
               <HtmlTooltip
                 className="z-999"
+                placement="bottom"
                 title={tooltipContent(packageDetail)}
                 arrow
                 onClose={handleTooltipSmallClose}
@@ -216,7 +228,6 @@ const PackageInfoComponentSmall: React.FC<any>  = ({ packageDetail, packageHisto
                 disableFocusListener
                 disableHoverListener
                 disableTouchListener
-                placement="right"
                 slotProps={{
                   popper: {
                     disablePortal: true,
