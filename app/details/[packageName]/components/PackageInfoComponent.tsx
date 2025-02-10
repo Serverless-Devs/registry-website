@@ -131,7 +131,7 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
     setOpen(true);
   };
 
-
+    let isLongTitle = packageDetail?.name?.length > 22 ? '45px' : '60px';
     return <section className="breadcrumb-area">
       <div className="container">
         <div className="content">
@@ -146,7 +146,7 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
               </div>
               {/* <div className="ml-[20px]"> */}
               <div>
-                <h2 className="breadd wow fadeInUp text-[60px]">
+                <h2 className={"breadd wow fadeInUp text-["+ isLongTitle+ "]"}>
                   {packageDetail?.name}
                 </h2>
                 <div className="flex items-center space-x-2 text-white">
