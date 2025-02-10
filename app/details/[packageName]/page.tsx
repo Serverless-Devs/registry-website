@@ -256,7 +256,7 @@ const PackageDetailPage: React.FC<PackageDetailProps> = ({ params }) => {
             {/* 大屏时候样式 */}
             <div
               // className={`container p-4 mx-6 w-[80%]  md:block md:w-3/4  md:!ml-auto`}
-              className={` ${isSticky ? "!ml-auto !mr-10 p-4 mx-6 w-[80%] md:block md:w-["+isWebChartbotShoppingGuide+"]" : "container mx-6"}`}
+              className={` ${isSticky ? "!ml-auto !mr-10 p-4 mx-6 w-[70%] md:block md:w-["+isWebChartbotShoppingGuide+"]" : "container mx-6"}`}
 
             >
               <div className="flex">
