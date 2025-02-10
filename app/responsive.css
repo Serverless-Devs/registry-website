@@ -31,8 +31,15 @@
     .container {
         max-width:768px
     }
+    /* 修改Footer宽度 */
+    .my-footer  {
+        max-width: max-content;
+    }
 }
 
+
+
+  
 @media (min-width: 1024px) {
 
 }

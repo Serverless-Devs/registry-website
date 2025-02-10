@@ -8,8 +8,8 @@ const Footer: React.FC = () => {
   return (
     <>
       <footer className="footer-area two py-12">
-        <div className="container mx-auto">
-          <div className="container mx-auto sm:px-6 lg:px-8 py-5 md:py-10 bg-[#1e1f24] rounded-3xl text-white">
+        <div className="container mx-auto my-footer">
+          <div className="mx-auto sm:px-6 lg:px-8 py-5 md:py-10 bg-[#1e1f24] rounded-3xl text-white">
             <div className="grid grid-cols-8 lg:grid-cols-12"> <div className="p-4 col-span-8 flex flex-col gap-5"> <h2 className="text-2xl font-medium">联系我们</h2>
               <p className="text-[#6e7587] leading-loose  tracking-normal text-justify">Serverless Devs Registry 是 Serverless Devs 社区的衍生品，遵循 Serverless Devs Model 规范，为打造 Serverless 生态基础，繁荣 Serverless 开源生态而努力。正在为成为好用的 Serverless 领域的 NPM，Pypi ... 而努力。</p>
               <div className="flex flex-row flex-wrap gap-4">
