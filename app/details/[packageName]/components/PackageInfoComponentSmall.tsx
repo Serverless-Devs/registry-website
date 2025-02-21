@@ -1,8 +1,24 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Button,Tooltip,ClickAwayListener,} from "@mui/material";
-import { HtmlTooltip, formatDateWithHyphen, tooltipContent } from "./util";
+import React from "react";
+import { Button, Tooltip, ClickAwayListener } from "@mui/material";
+import {
+  HtmlTooltip,
+  formatDateWithHyphen,
+  generateRandomString,
+  tooltipContent,
+} from "./util";
+// @ts-ignore
+import AESPluginEvent from "@ali/aes-tracker-plugin-event";
+// @ts-ignore
+import AES from "@ali/aes-tracker";
 
+const sendEvent = new AES({
+  pid: "N68f6r", // 项目 ID
+
+  user_type: "101", // 当前登录用户所属的账号体系
+  uid: "", // 当前登录用户的账号 ID
+  username: "", // 当前登录用户的账号名称
+}).use(AESPluginEvent);
 
 const statsContainerStyle = {
   display: "flex",
@@ -123,7 +139,11 @@ const stickyDivStyle = {
 };
 
 // 外部引入的组件名称为： PackageInfoComponentSmall
-const PackageInfoComponentSmall: React.FC<any>  = ({ packageDetail, packageHistory, pkgInfo}: any) => {
+const PackageInfoComponentSmall: React.FC<any> = ({
+  packageDetail,
+  packageHistory,
+  pkgInfo,
+}: any) => {
   const [openSmall, setOpenSmall] = React.useState(false);
 
   const handleTooltipSmallClose = () => {
@@ -134,144 +154,179 @@ const PackageInfoComponentSmall: React.FC<any>  = ({ packageDetail, packageHisto
     setOpenSmall(true);
   };
 
-
-  return <section className="breadcrumb-area" style={{ height: '100%' }}>
-    <div className="container" style={{ position: 'sticky', top: 0 }}>
-      <div className="content" style={{ padding: '20px 0px 40px' }}>
-        <div className="flex items-center flex-shrink-0">
-          <div>
-            <img
-              src="/image/application_icon.svg"
-              alt="应用"
-              style={{ width: "100px", height: "100px", color: '#959CFF', border: '0.8px solid #FFFFFF', borderRadius: '8px' }}
-            />
-          </div>
-          <div className="ml-[20px]">
-            <div className="breadd wow fadeInUp text-[24px] text-white mb-[10px]" style={{wordBreak: 'break-all'}}>
-              {packageDetail?.name}
-            </div>
-            <div className="flex items-center text-white">
-              {/* <FontAwesomeIcon icon={faCalendar} /> */}
-              <div style={authorIconStyle}>
-                <div style={authorFontStyle}>devs</div>
-              </div>
-              <span className="text-opacity-70 text-[#F4F4F6] text-[12px]" style={{ marginLeft: '8px' }}>
-                发布于
-                {formatDateWithHyphen(packageDetail?.created_at || packageDetail?.create || "")}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="p-0" style={statsContainerStyle}>
-            <div style={statsItemStyle as any}>
-              <div style={{ ...statsNumberStyle, fontSize: '24px' }}>-</div>
-              <div style={{ ...statsLabelStyle, fontSize: '12px' }}>工具方法</div>
-            </div>
-            {/* 分割线 */}
-            <div className="border-r border-[#4C505D] h-[32px]"></div>
-            <div style={statsItemStyle as any}>
-              <div style={{ ...statsNumberStyle, fontSize: '24px' }}>{pkgInfo?.download || packageDetail?.download}</div>
-              <div style={{ ...statsLabelStyle, fontSize: '12px' }}>下载量</div>
-            </div>
-            <div className="border-r border-[#4C505D] h-[32px]"></div>
-            <div style={statsItemStyle as any}>
-              <div style={{ ...statsNumberStyle, fontSize: '24px' }}>- s</div>
-              <div style={{ ...statsLabelStyle, fontSize: '12px' }}>部署耗时</div>
-            </div>
-          </div>
-          <Tooltip
-            title={
-              (packageDetail?.type == "Project" || packageDetail?.type == "application")
-                ? "部署到阿里云函数计算"
-                : "无法部署"
-            }
-            followCursor
-          >
-            <span className="!w-full">
-              <Button
-                className="!w-full"
-                style={
-                  (packageDetail?.type == "Project" || packageDetail?.type == "application")
-                    ? deployButtonStyle
-                    : deployButtonDisabledStyle
-                }
-                disabled={packageDetail?.type !== "Project" && packageDetail?.type !== "application"}
-                onClick={() =>
-                  window.open(
-                    `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`,
-                    "_blank"
-                  )
-                }
-              >
-                <span className="flex items-center justify-center">
-                  <img
-                    className="mr-2"
-                    src="/image/deploy_button_icon.svg"
-                    alt="部署"
-                  />
-                  部署使用
-                </span>
-              </Button>
-            </span>
-          </Tooltip>
-          <ClickAwayListener onClickAway={handleTooltipSmallClose}>
-            <div className="!w-full">
-              <HtmlTooltip
-                className="z-999"
-                placement="bottom"
-                title={tooltipContent(packageDetail)}
-                arrow
-                onClose={handleTooltipSmallClose}
-                open={openSmall}
-                disableFocusListener
-                disableHoverListener
-                disableTouchListener
-                slotProps={{
-                  popper: {
-                    disablePortal: true,
-                  },
+  return (
+    <section className="breadcrumb-area" style={{ height: "100%" }}>
+      <div className="container" style={{ position: "sticky", top: 0 }}>
+        <div className="content" style={{ padding: "20px 0px 40px" }}>
+          <div className="flex items-center flex-shrink-0">
+            <div>
+              <img
+                src="/image/application_icon.svg"
+                alt="应用"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  color: "#959CFF",
+                  border: "0.8px solid #FFFFFF",
+                  borderRadius: "8px",
                 }}
+              />
+            </div>
+            <div className="ml-[20px]">
+              <div
+                className="breadd wow fadeInUp text-[24px] text-white mb-[10px]"
+                style={{ wordBreak: "break-all" }}
               >
+                {packageDetail?.name}
+              </div>
+              <div className="flex items-center text-white">
+                {/* <FontAwesomeIcon icon={faCalendar} /> */}
+                <div style={authorIconStyle}>
+                  <div style={authorFontStyle}>devs</div>
+                </div>
+                <span
+                  className="text-opacity-70 text-[#F4F4F6] text-[12px]"
+                  style={{ marginLeft: "8px" }}
+                >
+                  发布于
+                  {formatDateWithHyphen(
+                    packageDetail?.created_at || packageDetail?.create || ""
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="p-0" style={statsContainerStyle}>
+              <div style={statsItemStyle as any}>
+                <div style={{ ...statsNumberStyle, fontSize: "24px" }}>-</div>
+                <div style={{ ...statsLabelStyle, fontSize: "12px" }}>
+                  工具方法
+                </div>
+              </div>
+              {/* 分割线 */}
+              <div className="border-r border-[#4C505D] h-[32px]"></div>
+              <div style={statsItemStyle as any}>
+                <div style={{ ...statsNumberStyle, fontSize: "24px" }}>
+                  {pkgInfo?.download || packageDetail?.download}
+                </div>
+                <div style={{ ...statsLabelStyle, fontSize: "12px" }}>
+                  下载量
+                </div>
+              </div>
+              <div className="border-r border-[#4C505D] h-[32px]"></div>
+              <div style={statsItemStyle as any}>
+                <div style={{ ...statsNumberStyle, fontSize: "24px" }}>- s</div>
+                <div style={{ ...statsLabelStyle, fontSize: "12px" }}>
+                  部署耗时
+                </div>
+              </div>
+            </div>
+            <Tooltip
+              title={
+                packageDetail?.type == "Project" ||
+                packageDetail?.type == "application"
+                  ? "部署到阿里云函数计算"
+                  : "无法部署"
+              }
+              followCursor
+            >
+              <span className="!w-full">
                 <Button
-                  style={downloadButtonStyle}
-                  onClick={handleTooltipSmallOpen}
                   className="!w-full"
+                  style={
+                    packageDetail?.type == "Project" ||
+                    packageDetail?.type == "application"
+                      ? deployButtonStyle
+                      : deployButtonDisabledStyle
+                  }
+                  disabled={
+                    packageDetail?.type !== "Project" &&
+                    packageDetail?.type !== "application"
+                  }
+                  onClick={() => {
+                    sendEvent(generateRandomString(10), {
+                      et: "CLK",
+                      c1: "deploy",
+                      c2: packageDetail?.name,
+                    });
+                    window.open(
+                      `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`,
+                      "_blank"
+                    );
+                  }}
                 >
                   <span className="flex items-center justify-center">
                     <img
                       className="mr-2"
-                      src="/image/console_download_icon.svg"
-                      alt="指令下载"
+                      src="/image/deploy_button_icon.svg"
+                      alt="部署"
                     />
-                    指令下载
+                    部署使用
                   </span>
                 </Button>
-              </HtmlTooltip>
-            </div>
-          </ClickAwayListener>
-          <Button
-            className="!w-full"
-            style={codeButtonStyle}
-            onClick={() => {
-              window.open(packageDetail?.zipball_url || packageHistory[0].zipball_url, "_blank");
-            }}
-          >
-            <span className="flex items-center justify-center">
-              <img
-                className="mr-[4px]"
-                src="/image/pkg_download_icon.svg"
-                alt="下载代码包"
-              />
-              下载代码包
-            </span>
-          </Button>
+              </span>
+            </Tooltip>
+            <ClickAwayListener onClickAway={handleTooltipSmallClose}>
+              <div className="!w-full">
+                <HtmlTooltip
+                  className="z-999"
+                  placement="bottom"
+                  title={tooltipContent(packageDetail)}
+                  arrow
+                  onClose={handleTooltipSmallClose}
+                  open={openSmall}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  slotProps={{
+                    popper: {
+                      disablePortal: true,
+                    },
+                  }}
+                >
+                  <Button
+                    style={downloadButtonStyle}
+                    onClick={handleTooltipSmallOpen}
+                    className="!w-full"
+                  >
+                    <span className="flex items-center justify-center">
+                      <img
+                        className="mr-2"
+                        src="/image/console_download_icon.svg"
+                        alt="指令下载"
+                      />
+                      指令下载
+                    </span>
+                  </Button>
+                </HtmlTooltip>
+              </div>
+            </ClickAwayListener>
+            <Button
+              className="!w-full"
+              style={codeButtonStyle}
+              onClick={() => {
+                window.open(
+                  packageDetail?.zipball_url || packageHistory[0].zipball_url,
+                  "_blank"
+                );
+              }}
+            >
+              <span className="flex items-center justify-center">
+                <img
+                  className="mr-[4px]"
+                  src="/image/pkg_download_icon.svg"
+                  alt="下载代码包"
+                />
+                下载代码包
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>;
-}
+    </section>
+  );
+};
 
 export default PackageInfoComponentSmall;
-

@@ -1,7 +1,24 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Button,Tooltip,ClickAwayListener } from "@mui/material";
-import { HtmlTooltip, formatDateWithHyphen, tooltipContent } from "./util";
+import React from "react";
+import { Button, Tooltip, ClickAwayListener } from "@mui/material";
+import {
+  HtmlTooltip,
+  formatDateWithHyphen,
+  generateRandomString,
+  tooltipContent,
+} from "./util";
+// @ts-ignore
+import AESPluginEvent from "@ali/aes-tracker-plugin-event";
+// @ts-ignore
+import AES from "@ali/aes-tracker";
+
+const sendEvent = new AES({
+  pid: "N68f6r", // 项目 ID
+
+  user_type: "101", // 当前登录用户所属的账号体系
+  uid: "", // 当前登录用户的账号 ID
+  username: "", // 当前登录用户的账号名称
+}).use(AESPluginEvent);
 
 const statsContainerStyle = {
   display: "flex",
@@ -121,7 +138,11 @@ const stickyDivStyle = {
 };
 
 // 外部引入的组件名称为： PackageInfoComponent
-const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pkgInfo }: any) => {
+const PackageInfoComponent: React.FC<any> = ({
+  packageDetail,
+  packageHistory,
+  pkgInfo,
+}: any) => {
   const [open, setOpen] = React.useState(false);
   const handleTooltipClose = () => {
     setOpen(false);
@@ -131,8 +152,9 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
     setOpen(true);
   };
 
-    let isLongTitle = packageDetail?.name?.length > 22 ? '45px' : '60px';
-    return <section className="breadcrumb-area">
+  let isLongTitle = packageDetail?.name?.length > 22 ? "45px" : "60px";
+  return (
+    <section className="breadcrumb-area">
       <div className="container">
         <div className="content">
           <div className="md:flex justify-between items-center">
@@ -141,12 +163,20 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
                 <img
                   src="/image/application_icon.svg"
                   alt="应用"
-                  style={{ width: "120px", height: "120px", color: '#959CFF', border: '0.8px solid #FFFFFF', borderRadius: '8px' }}
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    color: "#959CFF",
+                    border: "0.8px solid #FFFFFF",
+                    borderRadius: "8px",
+                  }}
                 />
               </div>
               {/* <div className="ml-[20px]"> */}
               <div>
-                <h2 className={"breadd wow fadeInUp text-["+ isLongTitle+ "]"}>
+                <h2
+                  className={"breadd wow fadeInUp text-[" + isLongTitle + "]"}
+                >
                   {packageDetail?.name}
                 </h2>
                 <div className="flex items-center space-x-2 text-white">
@@ -154,14 +184,19 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
                   <div style={authorIconStyle}>
                     <div style={authorFontStyle}>devs</div>
                   </div>
-                  <span className="text-opacity-70 text-[#F4F4F6] text-[12px]" style={{ margin: 0 }}>
+                  <span
+                    className="text-opacity-70 text-[#F4F4F6] text-[12px]"
+                    style={{ margin: 0 }}
+                  >
                     发布于
-                    {formatDateWithHyphen(packageDetail?.created_at || packageDetail?.create || "")}
+                    {formatDateWithHyphen(
+                      packageDetail?.created_at || packageDetail?.create || ""
+                    )}
                   </span>
                 </div>
               </div>
             </div>
-  
+
             <div>
               <div style={statsContainerStyle}>
                 <div style={statsItemStyle as any}>
@@ -169,7 +204,8 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
                   <div style={statsLabelStyle}>工具方法</div>
                   <Tooltip
                     title={
-                      (packageDetail?.type == "Project" || packageDetail?.type == "application")
+                      packageDetail?.type == "Project" ||
+                      packageDetail?.type == "application"
                         ? "部署到阿里云函数计算"
                         : "无法部署"
                     }
@@ -178,17 +214,26 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
                     <span>
                       <Button
                         style={
-                          (packageDetail?.type == "Project" || packageDetail?.type == "application")
+                          packageDetail?.type == "Project" ||
+                          packageDetail?.type == "application"
                             ? deployButtonStyle
                             : deployButtonDisabledStyle
                         }
-                        disabled={packageDetail?.type !== "Project" && packageDetail?.type !== "application"}
-                        onClick={() =>
+                        disabled={
+                          packageDetail?.type !== "Project" &&
+                          packageDetail?.type !== "application"
+                        }
+                        onClick={() => {
+                          sendEvent(generateRandomString(10), {
+                            et: "CLK",
+                            c1: "deploy",
+                            c2: packageDetail?.name,
+                          });
                           window.open(
                             `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`,
                             "_blank"
-                          )
-                        }
+                          );
+                        }}
                       >
                         <span className="flex items-center justify-center">
                           <img
@@ -205,7 +250,9 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
                 {/* 分割线 */}
                 <div className="border-r border-[#4C505D] h-[32px] px-[10px]"></div>
                 <div style={statsItemStyle as any}>
-                  <div style={statsNumberStyle}>{pkgInfo?.download || packageDetail?.download}</div>
+                  <div style={statsNumberStyle}>
+                    {pkgInfo?.download || packageDetail?.download}
+                  </div>
                   <div style={statsLabelStyle}>下载量</div>
                   <ClickAwayListener onClickAway={handleTooltipClose}>
                     <div>
@@ -247,7 +294,11 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
                   <Button
                     style={codeButtonStyle}
                     onClick={() => {
-                      window.open(packageDetail?.zipball_url || packageHistory[0].zipball_url, "_blank");
+                      window.open(
+                        packageDetail?.zipball_url ||
+                          packageHistory[0].zipball_url,
+                        "_blank"
+                      );
                     }}
                   >
                     <span className="flex items-center justify-center">
@@ -265,8 +316,8 @@ const PackageInfoComponent: React.FC<any> = ({ packageDetail, packageHistory, pk
           </div>
         </div>
       </div>
-    </section>;
-  }
+    </section>
+  );
+};
 
 export default PackageInfoComponent;
-
