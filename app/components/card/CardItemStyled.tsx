@@ -224,7 +224,7 @@ export default function CardItemStyled({ item, maxWidth, height, padding }: Card
               }}
               className={"download btn btn-outline-secondary" + ' ' + styles.download}
             >
-              下载组件
+              下载代码包
             </button>
             {/* Details button */}
             <button
