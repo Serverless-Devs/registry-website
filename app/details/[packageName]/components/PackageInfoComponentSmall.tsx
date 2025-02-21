@@ -246,10 +246,11 @@ const PackageInfoComponentSmall: React.FC<any> = ({
                     packageDetail?.type !== "application"
                   }
                   onClick={() => {
-                    sendEvent(generateRandomString(10), {
+                    sendEvent('点击部署', {
                       et: "CLK",
                       c1: "deploy",
                       c2: packageDetail?.name,
+                      c3: `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`
                     });
                     window.open(
                       `https://fcnext.console.aliyun.com/applications/create?template=${packageDetail?.name}`,
