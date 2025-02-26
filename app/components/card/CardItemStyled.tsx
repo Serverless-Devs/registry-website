@@ -210,7 +210,7 @@ export default function CardItemStyled({ item, maxWidth, height, padding }: Card
           textAlign: "left",
         }}
       >
-      </CardContent>
+      </CardContent> 
 
       {/* Action buttons for download and details */}
       <CardActions disableSpacing sx={{padding: 0}}>

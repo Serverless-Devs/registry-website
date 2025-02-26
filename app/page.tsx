@@ -534,7 +534,7 @@ const ResourcePage: React.FC = () => {
               marginRight: "8px",
               color: "#FFFFFF",
               fontWeight: "400",
-              fontSize: "12px",
+              fontSize: "14px",
             }}
           >
             HOT!
@@ -542,7 +542,7 @@ const ResourcePage: React.FC = () => {
           <img
             src="/image/AI_button.svg"
             alt="AI 工具"
-            style={{ width: "18px", height: "18px", marginRight: "8px", fontSize: "12px", }}
+            style={{ width: "18px", height: "18px", marginRight: "8px", fontSize: "14px", }}
           />
           AI 工具
         </Button>
@@ -560,7 +560,7 @@ const ResourcePage: React.FC = () => {
             border: "1px solid #b3b6c1",
             borderRadius: "32px",
             padding: "8px 16px",
-            fontSize: "12px",
+            fontSize: "14px",
           }}
         >
           <img
@@ -584,7 +584,7 @@ const ResourcePage: React.FC = () => {
             border: "1px solid #b3b6c1",
             borderRadius: "32px",
             padding: "8px 16px",
-            fontSize: "12px",
+            fontSize: "14px",
           }}
         >
           <img
@@ -608,7 +608,7 @@ const ResourcePage: React.FC = () => {
             border: "1px solid #b3b6c1",
             borderRadius: "32px",
             padding: "8px 16px",
-            fontSize: "12px",
+            fontSize: "14px",
           }}
         >
           <img
@@ -900,13 +900,14 @@ const ResourcePage: React.FC = () => {
 
           {/* Content Grid */}
           {selectedType !== "4" ? (
-            <div className="w-full md:w-7/12 lg:w-9/12">
+            // <div className="w-full md:w-7/12 lg:w-9/12">
+            <div className="flex-1 flex-wrap">
               <div
                 className="grid"
                 style={{
                   // 因为保证box宽度为328px
                   // 每列宽度328px
-                  gridTemplateColumns: "repeat(auto-fill, 328px)",
+                  gridTemplateColumns: "repeat(auto-fill, 300px)",
                   // gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
                   gap: "16px",
                 }}

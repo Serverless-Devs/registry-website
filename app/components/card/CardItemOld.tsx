@@ -200,7 +200,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
           textAlign: "left",
         }}
       >
-      </CardContent>
+      </CardContent> 
 
       {/* Action buttons for download and details */}
       <CardActions disableSpacing>

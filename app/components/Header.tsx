@@ -68,7 +68,7 @@ const Header = (props: HeaderProps) => {
 
 
           {/* Middle Section with Navigation Buttons */}
-          <div className="header-center flex items-center space-x-4 ml-10 text-[14pt] h-[44px]">
+          <div className="header-center flex items-center space-x-4 ml-10 text-[14px] h-[44px]">
             {/* 应该用a 标签，防止跳转外部连接无法后退 */}
             <a href="https://serverless-devs.com" className="nav-link text-white " style={{ fontFamily: 'sans-serif'}}>
               DEVS
@@ -100,20 +100,20 @@ const Header = (props: HeaderProps) => {
               className="w-[40px] h-[40px] flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
               onClick={toggleSearch}
             >
-              <div className="w-4 h-4 rounded-full bg-white bg-opacity-10 flex items-center justify-center">
+              <div className="">
                 <img src="/image/search.svg" alt="Search Icon" className="w-[12pt] h-[12pt]" />
               </div>
             </button>
 
             <button
-              className="nav-btn w-[125.45px] h-[44px] fullButton items-center justify-center rounded-[32px] text-white border border-white px-8 py-2 bg-transparent hover:bg-white hover:text-gray-800 flex"
+              className="w-[125.45px] h-[44px] fullButton flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
               onClick={() => window.open("https://github.com/serverless-devs/Serverless-Devs", "_blank")}
             >
               <a
                 // href="https://github.com/serverless-devs/Serverless-Devs"
                 // target="_blank"
                 rel="noopener noreferrer"
-                className="text-white text-[16px]"
+                className="text-white text-[14px]"
               >
                 GITHUB
               </a>
