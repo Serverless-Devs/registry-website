@@ -160,13 +160,15 @@ const PackageInfoComponent: React.FC<any> = ({
             <div className="flex items-center gap-[16px] flex-shrink-0">
               <div>
                 <img
-                  src="/image/application_icon.svg"
+                  // src="/image/application_icon.svg"
+                  src="/image/application_icon_core.svg"
                   alt="应用"
                   style={{
                     width: "120px",
                     height: "120px",
                     color: "#959CFF",
-                    border: "0.8px solid #FFFFFF",
+                    border: "0.8px solid #B3B6C1",
+                    background: "rgba(255, 255, 255, 0.05)",
                     borderRadius: "8px",
                   }}
                 />

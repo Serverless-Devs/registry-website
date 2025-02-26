@@ -101,12 +101,12 @@ const Header = (props: HeaderProps) => {
               onClick={toggleSearch}
             >
               <div className="">
-                <img src="/image/search.svg" alt="Search Icon" className="w-[12pt] h-[12pt]" />
+                <img src="/image/search.svg" alt="Search Icon" className="w-[12px] h-[12px]" />
               </div>
             </button>
 
             <button
-              className="w-[125.45px] h-[44px] fullButton flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
+              className="w-[125.45px] h-[40px] fullButton flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
               onClick={() => window.open("https://github.com/serverless-devs/Serverless-Devs", "_blank")}
             >
               <a
