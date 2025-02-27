@@ -1,9 +1,10 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Tooltip, ClickAwayListener } from "@mui/material";
 import {
   HtmlTooltip,
   formatDateWithHyphen,
+  getParams,
   tooltipContent,
 } from "./util";
 // @ts-ignore
@@ -137,12 +138,30 @@ const stickyDivStyle = {
   zIndex: 1000, // 注意：z-index 在 JavaScript 对象中应使用驼峰命名法 zIndex
 };
 
+
 // 外部引入的组件名称为： PackageInfoComponentSmall
 const PackageInfoComponentSmall: React.FC<any> = ({
   packageDetail,
   packageHistory,
   pkgInfo,
 }: any) => {
+  const type = getParams('type');
+
+  const iconSrc = useMemo(() => {
+
+    if (type === 'Component' || type === '1') {
+      return '/image/card_component.svg'
+    }
+
+    if (type === 'Plugin' || type === '2') {
+      return "/image/card_plugin.svg";
+    }
+
+    if (type === 'Project' || type === '3') {
+      return "/image/application_icon_core.png";
+    }
+
+  }, [type])
   const [openSmall, setOpenSmall] = React.useState(false);
 
   const handleTooltipSmallClose = () => {
@@ -158,23 +177,25 @@ const PackageInfoComponentSmall: React.FC<any> = ({
       <div className="container" style={{ position: "sticky", top: 0 }}>
         <div className="content" style={{ padding: "20px 0px 40px" }}>
           <div className="flex items-center flex-shrink-0">
-             <div style={{
-                    width: "120px",
-                    height: "120px",
-                    color: "#959CFF",
-                    border: "0.8px solid #B3B6C1",
-                    background: "rgba(255, 255, 255, 0.05)",
-                    borderRadius: "8px",
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-              }}>
-                <img
-                  // src="/image/application_icon.svg"
-                  src="/image/application_icon_core.png"
-                  alt="应用"
-                />
-              </div>
+            <div style={{
+              width: "100px",
+              height: "100px",
+              color: "#959CFF",
+              border: "0.8px solid #B3B6C1",
+              background: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "8px",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <img
+                // src="/image/application_icon.svg"
+                width='75px'
+                height='75px'
+                src={iconSrc}
+                // alt="应用"
+              />
+            </div>
             <div className="ml-[20px]">
               <div
                 className="breadd wow fadeInUp text-[24px] text-white mb-[10px]"
@@ -229,7 +250,7 @@ const PackageInfoComponentSmall: React.FC<any> = ({
             <Tooltip
               title={
                 packageDetail?.type == "Project" ||
-                packageDetail?.type == "application"
+                  packageDetail?.type == "application"
                   ? "部署到阿里云函数计算"
                   : "无法部署"
               }
@@ -240,7 +261,7 @@ const PackageInfoComponentSmall: React.FC<any> = ({
                   className="!w-full"
                   style={
                     packageDetail?.type == "Project" ||
-                    packageDetail?.type == "application"
+                      packageDetail?.type == "application"
                       ? deployButtonStyle
                       : deployButtonDisabledStyle
                   }

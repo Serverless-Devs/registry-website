@@ -229,7 +229,7 @@ export default function CardItemStyled({ item, maxWidth, height, padding }: Card
             {/* Details button */}
             <button
               className={"preButton btn btn-outline-primary"+' ' + styles["detail-button"]}
-              onClick={() => window.open(`/details/${item.name}`, "_blank")}
+              onClick={() => window.open(`/details/${item.name}?type=${item.type}`, "_blank")}
             >
               查看详情
             </button>

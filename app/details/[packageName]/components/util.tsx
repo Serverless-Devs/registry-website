@@ -6,6 +6,17 @@ import { PackageDetails } from "./types";
 import { TableRow,TableCell,} from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
 
+
+export function getParams(name:any) {
+  const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+  const result = window.location.search.substr(1).match(reg);
+  if (result) {
+    return decodeURI(result[2]);
+  }else {
+    return null;
+  }
+}
+
 export const md = markdownit({
   html: true,
   linkify: true,

@@ -236,7 +236,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
                 borderRadius: "20px",
                 borderColor: "#696b74",
               }}
-              onClick={() => window.open(`/details/${item.package}`, "_blank")}
+              onClick={() => window.open(`/details/${item.package}?type=${item.oldType}`, "_blank")}
             >
               查看详情
             </button>

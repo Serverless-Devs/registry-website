@@ -1,9 +1,10 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Tooltip, ClickAwayListener } from "@mui/material";
 import {
   HtmlTooltip,
   formatDateWithHyphen,
+  getParams,
   tooltipContent,
 } from "./util";
 // @ts-ignore
@@ -143,6 +144,24 @@ const PackageInfoComponent: React.FC<any> = ({
   pkgInfo,
 }: any) => {
   const [open, setOpen] = React.useState(false);
+
+  const type = getParams('type');
+  
+  const iconSrc = useMemo(() => {
+
+    if (type === 'Component' || type === '1') {
+      return '/image/card_component.svg'
+    }
+
+    if (type === 'Plugin' || type === '2') {
+      return "/image/card_plugin.svg";
+    }
+
+    if (type === 'Project' || type === '3') {
+      return "/image/application_icon_core.png";
+    }
+  }, [type])
+  
   const handleTooltipClose = () => {
     setOpen(false);
   };
@@ -171,8 +190,10 @@ const PackageInfoComponent: React.FC<any> = ({
               }}>
                 <img
                   // src="/image/application_icon.svg"
-                  src="/image/application_icon_core.png"
-                  alt="应用"
+                  width='85px'
+                  height='85px'
+                  src={iconSrc}
+                  // alt="应用"
                 />
               </div>
               {/* <div className="ml-[20px]"> */}
