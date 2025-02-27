@@ -158,21 +158,23 @@ const PackageInfoComponentSmall: React.FC<any> = ({
       <div className="container" style={{ position: "sticky", top: 0 }}>
         <div className="content" style={{ padding: "20px 0px 40px" }}>
           <div className="flex items-center flex-shrink-0">
-            <div>
-              <img
-                // src="/image/application_icon.svg"
-                src="/image/application_icon_core.svg"
-                alt="应用"
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  color: "#959CFF",
-                  border: "0.8px solid #B3B6C1",
-                  background: "rgba(255, 255, 255, 0.05)",
-                  borderRadius: "8px",
-                }}
-              />
-            </div>
+             <div style={{
+                    width: "120px",
+                    height: "120px",
+                    color: "#959CFF",
+                    border: "0.8px solid #B3B6C1",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    borderRadius: "8px",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+              }}>
+                <img
+                  // src="/image/application_icon.svg"
+                  src="/image/application_icon_core.png"
+                  alt="应用"
+                />
+              </div>
             <div className="ml-[20px]">
               <div
                 className="breadd wow fadeInUp text-[24px] text-white mb-[10px]"
