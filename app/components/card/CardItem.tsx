@@ -235,7 +235,7 @@ export default function CardItem({ item }: CardItemProps) {
                 borderRadius: "20px",
                 borderColor: "#696b74",
               }}
-              onClick={() => window.open(`/details/${item.name}`, "_blank")}
+              onClick={() => window.open(`/details/${item.name}?type=${item.type}`, "_blank")}
             >
               查看详情
             </button>

@@ -1,34 +1,38 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
-import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFire,
 } from "@fortawesome/free-solid-svg-icons";
+import styles from './CardItemStyled.module.css'
 
-interface OldCardItemProps {
+interface CardItemStyledProps {
   item: {
-    oldType: number;
-    package: string;
-    download?: number;
-    version: {
-      created_at: string;
-      zipball_url?: string;
-    };
+    name: string;
+    download: number;
+    latest_create: string;
     description?: string;
+    zipball_url?: string;
+    type?:string;
   };
-  zipball_url?: string; // Add zipball_url as a separate prop
+  maxWidth?: string;
+  height?: string;
+  padding?: string;
 }
 
+interface StyledCardProps { 
+  theme?:string, 
+  maxWidth?:string 
+  height?:string 
+}
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  maxWidth: 285,
+const StyledCard = styled(Card)(({ theme, maxWidth, height }:StyledCardProps) => ({
+  maxWidth: maxWidth || 285,
+  height: "auto",
   position: "relative",
   display: "flex",
   flexDirection: "column",
@@ -46,55 +50,63 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-export default function OldCardItem({ item }: OldCardItemProps) {
+export default function CardItemStyled({ item, maxWidth, height, padding }: CardItemStyledProps) {
   const splitMaxLength = (str: string, length: number) => {
     return str.length > length ? str.substring(0, length) + "..." : str;
   };
 
-  const downloadPlugin = (name: string) => {
-    console.log(`Downloading plugin: ${name}`);
-  };
-
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    };
     return new Date(dateString).toLocaleDateString("zh-CN", options);
   };
 
   const getIconSrc = () => {
-    switch (item.oldType) {
-      case 1:
+    switch (item.type) {
+      case "Component":
         return "/image/card_component.svg";
-      case 2:
+      case "Plugin":
         return "/image/card_plugin.svg";
-      case 3:
+      case "Project":
+      default:
         return "/image/card_application.svg";
     }
   };
 
-  return (
-    <StyledCard>
-      <div
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "-20px",
-          backgroundColor: "#6676fa",
-          color: "white",
-          width: "90px",
-          height: "25px",
-          transform: "rotate(45deg)",
-          textAlign: "center",
-          lineHeight: "25px",
-          fontSize: "0.8rem",
-        }}
-      >
-        仅维护
-      </div>
+  async function fetchPackageHistory(
+    packageName: string
+  ): Promise<any> {
+    try {
+      const res = await fetch(
+        `https://api.devsapp.cn/v3/packages/${packageName}/release`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch package history");
+      }
+      const data = await res.json();
+      return data.body;
+    } catch (error) {
+      console.error("Error fetching package history:", error);
+      return [];
+    }
+  }
 
+  const handleDownload = async (item: any) => {
+    const data = await fetchPackageHistory(item.name);
+    const pkg = data[0];
+    window.open(pkg.zipball_url, '_blank');
+  };
+
+  return (
+    <StyledCard maxWidth={maxWidth} height={height}>
+      {/* Icon Box */}
       <div
         style={{
           backgroundColor: "inherit",
-          padding: "20px",
+          padding: padding || "20px",
           borderTopLeftRadius: "15px",
           borderTopRightRadius: "15px",
           textAlign: "left",
@@ -119,7 +131,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
         >
           <img
             src={getIconSrc()}
-            alt={`${item.oldType} Icon`}
+            alt={`${item.type} Icon`}
             style={{ width: "30px", height: "30px" }}
           />
         </div>
@@ -139,7 +151,6 @@ export default function OldCardItem({ item }: OldCardItemProps) {
           >
             {item.download}
           </Typography>
-
           <Typography
             variant="body2"
             sx={{ fontSize: "0.9rem", color: "#828596", marginRight: "10px" }}
@@ -147,7 +158,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
             |
           </Typography>
           <Typography variant="body2" sx={{ fontSize: "0.9rem", color: "#828596" }}>
-            {formatDate(item.version.created_at)}
+            {formatDate(item.latest_create)}
           </Typography>
         </div>
         <div>
@@ -160,7 +171,7 @@ export default function OldCardItem({ item }: OldCardItemProps) {
             marginTop: "10px", 
           }}
         >
-          {splitMaxLength(item.package, 23)}
+          {splitMaxLength(item.name, 23)}
         </Typography>
 
         <Typography
@@ -182,7 +193,6 @@ export default function OldCardItem({ item }: OldCardItemProps) {
                 const parsedDescription = JSON.parse(item.description.replace(/'/g, '"'));
                 return parsedDescription.zh;
               } catch (error) {
-                // console.log(item.description)
                 // console.error("Failed to parse description:", error);
                 return item.description; 
               }
@@ -203,40 +213,23 @@ export default function OldCardItem({ item }: OldCardItemProps) {
       </CardContent> 
 
       {/* Action buttons for download and details */}
-      <CardActions disableSpacing>
-        <div style={{ width: "100%", textAlign: "left", marginTop:"-15px" }}>
-          <div className="button flex space-x-4">
+      <CardActions disableSpacing sx={{padding: 0}}>
+        <div style={{ width: "100%", textAlign: "left", padding: '0 24px 20px', display: 'flex', alignItems: 'center'}}>
+          {/* <div className="flex space-x-4 justify-center "> */}
+          <div className="flex">
             {/* Download button */}
             <button
               onClick={() => {
-                window.open(item.version.zipball_url || "", "_blank"); 
+                handleDownload(item); 
               }}
-              className="download btn btn-outline-secondary"
-              style={{
-                backgroundColor: "#2e3037",
-                color: "#c1c2c8",
-                fontSize: "0.8rem",
-                padding: "5px 20px",
-                borderRadius: "20px",
-                height: "40px",
-                border:"none",
-              }}
+              className={"download btn btn-outline-secondary" + ' ' + styles.download}
             >
-              下载
+              下载代码包
             </button>
             {/* Details button */}
             <button
-              className="preButton btn btn-outline-primary"
-              style={{
-                backgroundColor: "#1d1e23",
-                color: "#c1c2c8",
-                fontSize: "0.8rem",
-                padding: "5px 20px",
-                marginRight: "10px",
-                borderRadius: "20px",
-                borderColor: "#696b74",
-              }}
-              onClick={() => window.open(`/details/${item.package}?type=${item.oldType}`, "_blank")}
+              className={"preButton btn btn-outline-primary"+' ' + styles["detail-button"]}
+              onClick={() => window.open(`/details/${item.name}?type=${item.type}`, "_blank")}
             >
               查看详情
             </button>

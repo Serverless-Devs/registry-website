@@ -1,0 +1,48 @@
+/* 正常时候，小屏幕侧边栏要隐藏 */
+.index-main .hd-small{
+  display: none;
+}
+
+.hd-small-scroll {
+  position: fixed;
+  top     : 20px;
+  width   : inherit;
+  overflow: hidden;
+  display: block!important;
+}
+
+@media(max-width:1280px) {
+    .index-main {
+      display: grid;
+      grid-template-columns: 328px 1fr;
+      gap: 60px; /*间距60px*/
+    }
+
+    .index-main .hd-large {
+      display: none;
+    }
+
+    .index-main .hd-small{
+      display: block;
+    }
+     /* 防止表格宽度超出屏幕 */
+     .index-main .markdown-body table {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      overflow: auto;
+    }
+  }
+  
+  @media(max-width:992px) {
+  }
+  
+  @media(max-width:768px) {
+    .index-main{
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+    }
+   
+  }
+  
+ 

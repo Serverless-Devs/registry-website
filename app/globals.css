@@ -23,6 +23,16 @@
   }
 }
 
+/*不设置最大高度*/
+.MuiBox-root{
+  overflow: hidden;
+  max-height: unset;
+}
+/* .container {
+  width: 100%
+} */
+
+
 /* Setting dark background color for the whole window */
 body {
   background-color: #121316;

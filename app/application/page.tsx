@@ -130,7 +130,9 @@ const ApplicationPage: React.FC = () => {
 
       {/* Main Content Section */}
       <section className="main-content-section">
-        <div className="container mx-auto flex flex-wrap py-12">
+        <div className="container mx-auto flex flex-wrap py-12" style={{
+          paddingBottom: '160px'
+        }}>
           {/* Right Section (now moved to left) */}
           <div className="w-full md:w-5/12 lg:w-4/12 pr-4">
             <div className="sorting-section bg-white p-4 rounded shadow">

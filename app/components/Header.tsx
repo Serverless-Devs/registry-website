@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, FormEvent } from "react";
-import Link from "next/link";
+// import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -53,38 +53,35 @@ const Header = (props: HeaderProps) => {
 
   return (
     <header
-      className={`header-two navbar ${sticky ? "sticky-top sticky-header" : ""} z-10 p-3 ${sticky && isSticky ? "sticky-on" : ""
-        }`}
+      className={`header-two navbar ${sticky ? "sticky-top sticky-header" : ""} z-10 p-3 ${sticky && isSticky ? "sticky-on" : ""}`}
     >
-      <div className="container-fluid">
-        <div className="container mx-auto flex items-center justify-between container-1470">
+      <div className="container mx-auto astro-ewxirvlt" id="myHeader">
+        <div className="container mx-auto flex items-center justify-between h-[44px]" >
           {/* Left Section with Logo */}
           <div className="header-left">
             <img
               src="/image/logo.svg"
               alt="Serverless Registry Logo"
-              className="w-30 h-auto"
+              className="w-[77px] h-[44px]"
             />
           </div>
 
+
           {/* Middle Section with Navigation Buttons */}
-          <div className="header-center flex items-center space-x-4 ml-10">
-            <Link href="https://serverless-devs.com" className="nav-link text-white">
+          <div className="header-center flex items-center space-x-4 ml-10 text-[14px] h-[44px]">
+            {/* 应该用a 标签，防止跳转外部连接无法后退 */}
+            <a href="https://serverless-devs.com" className="nav-link text-white " style={{ fontFamily: 'sans-serif'}}>
               DEVS
-            </Link>
+            </a>
             <span className="text-white">|</span>
-            <Link href="/" className="nav-link text-white">
+            <a href="/" className="nav-link text-white">
               主页
-            </Link>
+            </a>
             {/* <span className="text-white">|</span>
-            <Link href="/" className="nav-link text-white">
-              主页
-            </Link> */}
-            {/* <span className="text-white">|</span>
-            <Link href="/faq" className="nav-link text-white">
+            <a href="/faq" className="nav-link text-white">
               FAQ
-            </Link> */}
-          </div>
+            </a> */}
+          </div> 
 
           {/* Right Section with Buttons */}
           <div className="header-right flex items-center space-x-4">
@@ -100,23 +97,23 @@ const Header = (props: HeaderProps) => {
             </button> */}
 
             <button
-              className="flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
+              className="w-[40px] h-[40px] flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
               onClick={toggleSearch}
             >
-              <div className="w-4 h-4 rounded-full bg-white bg-opacity-10 flex items-center justify-center">
-                <img src="/image/search.svg" alt="Search Icon" className="w-5 h-5" />
+              <div className="">
+                <img src="/image/search.svg" alt="Search Icon" className="w-[12px] h-[12px]" />
               </div>
             </button>
 
             <button
-              className="nav-btn w-[120px] h-[40px] items-center justify-center rounded-[32px] text-white border border-white px-3 py-1 bg-transparent hover:bg-white hover:text-gray-800 flex"
+              className="w-[125.45px] h-[40px] fullButton flex items-center justify-center bg-transparent rounded-full p-2 hover:bg-white hover:text-gray-800"
               onClick={() => window.open("https://github.com/serverless-devs/Serverless-Devs", "_blank")}
             >
               <a
                 // href="https://github.com/serverless-devs/Serverless-Devs"
                 // target="_blank"
                 rel="noopener noreferrer"
-                className="text-white text-[12px]"
+                className="text-white text-[14px]"
               >
                 GITHUB
               </a>
